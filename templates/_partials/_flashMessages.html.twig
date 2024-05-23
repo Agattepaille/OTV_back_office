@@ -1,0 +1,15 @@
+{# read and display all flash messages #}
+{% set flashTypes = {
+            'success': 'alert-success',
+            'error': 'alert-danger',
+            'warning': 'alert-warning',
+            'info': 'alert-info'
+        } %}
+
+{% for label, messages in app.flashes %}
+	{% for message in messages %}
+		<div class="alert {{ flashTypes[label]|default('alert-info') }}" role="alert">
+			{{ message }}
+		</div>
+	{% endfor %}
+{% endfor %}

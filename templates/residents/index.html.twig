@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Residents index{% endblock %}
+
+{% block body %}
+    <h1>Residents index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Civility</th>
+                <th>Lastname</th>
+                <th>Firstname</th>
+                <th>MobilePhone</th>
+                <th>LandlinePhone</th>
+                <th>Email</th>
+                <th>Street</th>
+                <th>StreetNumber</th>
+                <th>AdditionalStreetNumber</th>
+                <th>AdditionalAddressInfo</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for resident in residents %}
+            <tr>
+                <td>{{ resident.id }}</td>
+                <td>{{ resident.civility }}</td>
+                <td>{{ resident.lastname }}</td>
+                <td>{{ resident.firstname }}</td>
+                <td>{{ resident.mobilePhone }}</td>
+                <td>{{ resident.landlinePhone }}</td>
+                <td>{{ resident.email }}</td>
+                <td>{{ resident.street }}</td>
+                <td>{{ resident.streetNumber }}</td>
+                <td>{{ resident.additionalStreetNumber }}</td>
+                <td>{{ resident.additionalAddressInfo }}</td>
+                <td>
+                    <a href="{{ path('app_residents_show', {'id': resident.id}) }}">show</a>
+                    <a href="{{ path('app_residents_edit', {'id': resident.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_residents_new') }}">Create new</a>
+{% endblock %}

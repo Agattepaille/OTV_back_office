@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New OTV{% endblock %}
+
+{% block body %}
+    <h1>Create new OTV</h1>
+
+    {{ include('otv/_form.html.twig') }}
+
+    <a href="{{ path('app_o_t_v_index') }}">back to list</a>
+{% endblock %}

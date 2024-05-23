@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}OTV
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/style/otv.css') }}">
+{% endblock %}
+
+{% block body %}
+	<div class="showWrapper background">
+		<div class="otvCard">
+			<h2 class="otvTitle">Détail de l'OTV #{{ otv.id }}</h2>
+
+			<div class="lign">
+				<p class="label">Date de début :</p>
+				<p>{{ otv.startDate|date('d-m-Y') }}</p>
+			</div>
+			<div class="lign">
+				<p class="label">Date de fin :</p>
+				<p>{{ otv.endDate|date('d-m-Y') }}</p>
+			</div>
+			<div class="data-section">
+				<h3>Demandeur</h3>
+				<div class="lign">
+					<p class="label">Nom :</p>
+					<p>{{ otv.residents.lastname }}
+						{{ otv.residents.firstname }}</p>
+				</div>
+				<div class="lign">
+					<p class="label">Adresse :</p>
+					<p>{{ otv.residents.street }}</p>
+				</div>
+				{% if otv.residents.additionalStreetNumber is not empty or otv.residents.additionalAddressInfo is not empty %}
+					<div class="lign">
+						<p class="label">Informations adresse :</p>
+						<p>{{ otv.residents.additionalStreetNumber }}
+							/
+							{{ otv.residents.additionalAddressInfo }}</p>
+					</div>
+				{% endif %}
+				<div class="lign">
+					<p class="label">Quartier :</p>
+					<p>{{ otv.residents.districts.name }}</p>
+				</div>
+				<div class="lign">
+					<p class="label">Téléphone(s) :</p>
+					<p>{{ otv.residents.mobilePhone }}</p>
+					<p>{{ otv.residents.landlinePhone }}</p>
+				</div>
+				<div class="lign">
+					<p class="label">Courriel :</p>
+					<p>{{ otv.residents.email }}</p>
+				</div>
+			</div>
+
+			{% for key, value in data %}
+				<div class="data-section">
+					{% if key == "Personne1" or key == "Personne2" or key == "Personne3"  %}
+						{% else %}
+
+
+							<h3>{{ key }}</h3>
+							{% if value is iterable %}
+								{% for subkey, subvalue in value %}
+									<div class="lign subdata">
+										<p class="label">{{ subkey }}
+											:</p>
+										{% if subvalue is same as(true) %}
+											<p>Oui</p>
+										{% elseif subvalue is same as(false) %}
+											<p>Non</p>
+										{% else %}
+											<p>{{ subvalue }}</p>
+										{% endif %}
+									</div>
+								{% endfor %}
+							{% else %}
+								{% if value is same as(true) %}
+									<p>Oui</p>
+								{% elseif value is same as(false) %}
+									<p>Non</p>
+								{% else %}
+									<p>{{ value }}</p>
+								{% endif %}
+							{% endif %}
+					{% endif %}
+				</div>
+			{% endfor %}
+
+			{# Emergency Contacts Sections #}
+			{% if data.Personne1 is not empty %}
+				<div class="data-section">
+					<h3>Contact d'urgence 1</h3>
+					{% for key, value in data.Personne1 %}
+						{% if value is not empty %}
+							<div class="lign">
+								<p class="label">{{ key }}
+									:</p>
+								<p>{{ value }}</p>
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			{% endif %}
+
+			{% if data.Personne2 is not empty %}
+				<div class="data-section">
+					<h3>Contact d'urgence 2</h3>
+					{% for key, value in data.Personne2 %}
+						{% if value is not empty %}
+							<div class="lign">
+								<p class="label">{{ key }}
+									:</p>
+								<p>{{ value }}</p>
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			{% endif %}
+
+			{% if data.Personne3 is not empty %}
+				<div class="data-section">
+					<h3>Contact d'urgence 3</h3>
+					{% for key, value in data.Personne3 %}
+						{% if value is not empty %}
+							<div class="lign">
+								<p class="label">{{ key }}
+									:</p>
+								<p>{{ value }}</p>
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			{% endif %}
+
+			{# Justificatif de domicile #}
+			<div class="data-section">
+				<h3>Justificatif de domicile</h3>
+				<div class="lign">
+					<p class="label">Fichier :</p>
+					<p>
+						<a class="invoice light" href="{{ asset(otv.pathToFile) }}" target="_blank">
+
+							<i class="fa-solid fa-file-pdf"></i>
+							Justificatif de domicile
+						</a>
+					</p>
+				</div>
+			</div>
+
+
+			<div class="lign links">
+				<p>
+					<a class="redirect" href="{{ path('app_otv_index') }}">
+						<i class="fa-solid fa-arrow-left"></i>
+						Retour aux OTV
+					</a>
+				</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}

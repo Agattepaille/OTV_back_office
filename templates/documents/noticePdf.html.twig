@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Avis de passage</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				font-size: 12px;
+			}
+			.notice {
+				padding: 5px;
+				border-bottom: 1px dashed #ccc;
+				height: 20%;
+			}
+			.logoPolice {
+				max-width: 80px;
+				height: auto;
+				margin: 20px 0 0 50px;
+			}
+			.legendPolice {
+				text-align: center;
+				font-size: 14px;
+				margin-top: 20px;
+			}
+			.comments {
+				list-style: none;
+				padding: 0;
+				margin: 2px 0;
+			}
+			.comments li {
+				margin-bottom: 15px;
+				padding-bottom: 15px;
+				border-bottom: 1px solid #ccc;
+			}
+			.line {
+				list-style: none;
+				padding: 0;
+				margin: 2px 0;
+			}
+			.pagebreak {
+				page-break-after: always; /* Ajoute un saut de page après chaque quartier */
+			}
+			.container {
+				width: 100%;
+				border: 0;
+				border-spacing: 0;
+				border-collapse: collapse;
+			}
+			.container td {
+				vertical-align: top;
+			}
+
+			.notice-logo,
+			.notice-comments {
+				width: 80%;
+				border: 0;
+				border-spacing: 0;
+				border-collapse: collapse;
+			}
+			.notice-body {
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		{% set currentDistrict = null %}
+		{% set count = 0 %}
+		<!-- Compteur pour suivre le nombre d'avis -->
+		{% for district, OTVs in OTVsByDistrict %}
+			{% if OTVs|length > 0 %}
+				{% if currentDistrict is not null and currentDistrict != district %}
+					<div class="pagebreak"></div>
+				{% endif %}
+				{% set currentDistrict = district %}
+				{% for otv in OTVs %}
+					{% if count > 0 and count % 4 == 0 %}
+						<div class="pagebreak"></div>
+					{% endif %}
+					<div class="notice">
+						<table class="container">
+							<tr>
+								<td class="notice-logo">
+									<img src="{{ logoPolice }}" class="logoPolice" alt="Logo Police Municipale">
+									<p class="legendPolice">Police Municipale de<br>Marcq-en-Baroeul</p>
+								</td>
+								<td class="notice-body">
+									<h2>Avis de passage</h2>
+									<p>
+										Nom prénom :
+										<strong>{{ otv.residents.lastname }}
+											{{ otv.residents.firstname }}</strong>
+									</p>
+									<p>
+										Adresse :
+										<strong>{{ otv.residents.street }}</strong>
+									</p>
+									<p>
+										Quartier :
+										<strong>{{ district }}</strong>
+									</p>
+									<p>
+										<strong>Agent :</strong>
+										<ul class="line">
+											<li></li>
+										</ul>
+									</p>
+									<p>
+										<strong>Date et heure de passage :</strong>
+										<ul class="line">
+											<li></li>
+										</ul>
+									</p>
+								</td>
+								<td class="notice-comments">
+									<p>
+										<strong>Observations:</strong>
+									</p>
+									<ul class="comments">
+										{% for i in 1..4 %}
+											<li></li>
+										{% endfor %}
+									</ul>
+								</td>
+							</tr>
+						</table>
+					</div>
+					{% set count = count + 1 %}
+				{% endfor %}
+			{% endif %}
+		{% endfor %}
+	</body>
+</html>
