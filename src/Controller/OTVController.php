@@ -80,21 +80,21 @@ class OTVController extends AbstractController
     {
         // Récupérer toutes les données du formulaire
         $formData = $request->request->all();
-        $logger->info('Received data: ' . json_encode($formData));
+        $data = $formData['data'];
 
         // Créer l'entité Residents
         $resident = new Residents();
-        $resident = $residentsMapper->mapToEntity($resident, $formData);
+        $resident = $residentsMapper->mapToEntity($resident, $data);
 
         // Get the district id for the selected district
-        $district = $districtsRepository->findOneByName($formData['district']);
+        $district = $districtsRepository->findOneByName($data['district']);
 
         // Set the district on the resident
         $resident->setDistricts($district);
 
         // Créer l'entité OTV
         $OTV = new OTV();
-        $OTV = $OTVRequestMapper->mapToEntity($OTV, $formData);
+        $OTV = $OTVRequestMapper->mapToEntity($OTV, $data);
         $OTV->setResidents($resident);
 
         // Gérer le fichier uploadé
@@ -102,7 +102,7 @@ class OTVController extends AbstractController
         $file = $request->files->get('file');
         if ($file) {
             try {
-                $newFilename = $fileUploader->uploadFile($file, $formData['lastname'], $formData['firstname']);
+                $newFilename = $fileUploader->uploadFile($file, $data['lastname'], $data['firstname']);
                 $OTV->setFileName($newFilename);
                 $OTV->setPathToFile($this->uploadsDirectory . '/' . $newFilename);
             } catch (\Exception $e) {
