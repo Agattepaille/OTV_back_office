@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Kernel;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class FileUploader
 {
@@ -23,11 +25,12 @@ class FileUploader
         $lastname = $this->removeAccents($lastname);
         $firstname = $this->removeAccents($firstname);
         $newFilename = uniqid() . '_' . $lastname . '_' . $firstname . '.' . $file->guessExtension();
+        $storage = $this->uploadsDirectory;
 
         // Déplacer le fichier vers le répertoire de stockage
         try {
             $file->move(
-                $this->uploadsDirectory,
+                $storage,
                 $newFilename
             );
         } catch (FileException $e) {

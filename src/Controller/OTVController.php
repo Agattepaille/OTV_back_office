@@ -21,16 +21,19 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+
 
 #[Route('/otv')]
 class OTVController extends AbstractController
 {
     private $uploadsDirectory;
+    private $jwtManager;
 
-    public function __construct(string $uploadsDirectory)
+    public function __construct(string $uploadsDirectory, JWTTokenManagerInterface $jwtManager)
     {
         $this->uploadsDirectory = $uploadsDirectory;
+        $this->jwtManager = $jwtManager;
     }
 
     #[Route('/', name: 'app_otv_index', methods: ['GET'])]
@@ -78,23 +81,30 @@ class OTVController extends AbstractController
     #[Route('/new', name: 'app_otv_new', methods: ['GET', 'POST'])]
     public function new(FileUploader $fileUploader, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, OTVRequestMapper $OTVRequestMapper, ResidentsMapper $residentsMapper, DistrictsRepository $districtsRepository): Response
     {
+        // Vérifier le token JWT dans la requête
+       $requestToken = $request->headers->get('Authorization');
+        $credentials = $this->jwtManager->getCredentials($request);
+        if (!$this->jwtManager->checkCredentials($credentials, $this->getUser())) {
+            throw $this->createAccessDeniedException('Token JWT invalide.');
+        } 
+
         // Récupérer toutes les données du formulaire
         $formData = $request->request->all();
-        $logger->info('Received data: ' . json_encode($formData));
+        $data = $formData['data'];
 
         // Créer l'entité Residents
         $resident = new Residents();
-        $resident = $residentsMapper->mapToEntity($resident, $formData);
+        $resident = $residentsMapper->mapToEntity($resident, $data);
 
         // Get the district id for the selected district
-        $district = $districtsRepository->findOneByName($formData['district']);
+        $district = $districtsRepository->findOneByName($data['district']);
 
         // Set the district on the resident
         $resident->setDistricts($district);
 
         // Créer l'entité OTV
         $OTV = new OTV();
-        $OTV = $OTVRequestMapper->mapToEntity($OTV, $formData);
+        $OTV = $OTVRequestMapper->mapToEntity($OTV, $data);
         $OTV->setResidents($resident);
 
         // Gérer le fichier uploadé
@@ -102,7 +112,7 @@ class OTVController extends AbstractController
         $file = $request->files->get('file');
         if ($file) {
             try {
-                $newFilename = $fileUploader->uploadFile($file, $formData['lastname'], $formData['firstname']);
+                $newFilename = $fileUploader->uploadFile($file, $data['lastname'], $data['firstname']);
                 $OTV->setFileName($newFilename);
                 $OTV->setPathToFile($this->uploadsDirectory . '/' . $newFilename);
             } catch (\Exception $e) {
