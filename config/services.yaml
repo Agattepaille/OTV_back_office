@@ -13,6 +13,7 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind: 
             $uploadsDirectory: '%kernel.project_dir%/var/uploads'
+            $apiKey: '%env(resolve:API_KEY)%'
             # $uploadsDirectory: 'var/uploads'
 
 
@@ -24,6 +25,8 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+        # arguments:
+        #         $apiKey: '%env(resolve:API_KEY)%'
 
     # App\Services\FileUploader:
     #     arguments:
