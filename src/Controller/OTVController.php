@@ -13,6 +13,7 @@ use App\Mapper\OTVRequestMapper;
 use App\Repository\OTVRepository;
 use App\Services\ApiKeyAuthenticator;
 use App\Repository\DistrictsRepository;
+use App\Repository\ResidentsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,7 +33,6 @@ class OTVController extends AbstractController
     {
         $this->uploadsDirectory = $uploadsDirectory;
         $this->apiKeyAuthenticator = $apiKeyAuthenticator;
-      
     }
 
     #[Route('/', name: 'app_otv_index', methods: ['GET'])]
@@ -78,7 +78,7 @@ class OTVController extends AbstractController
 
 
     #[Route('/new', name: 'app_otv_new', methods: ['GET', 'POST'])]
-    public function new(FileUploader $fileUploader, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, OTVRequestMapper $OTVRequestMapper, ResidentsMapper $residentsMapper, DistrictsRepository $districtsRepository): Response
+    public function new(ResidentsRepository $residentsRepository, FileUploader $fileUploader, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, OTVRequestMapper $OTVRequestMapper, ResidentsMapper $residentsMapper, DistrictsRepository $districtsRepository): Response
     {
         if (!$this->apiKeyAuthenticator->authenticate($request)) {
             return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
@@ -89,9 +89,21 @@ class OTVController extends AbstractController
         $data = $formData['data'];
         $logger->info('Data received: ' . json_encode($data));
 
-        // Créer l'entité Residents
-        $resident = new Residents();
-        $resident = $residentsMapper->mapToEntity($resident, $data);
+        // Vérifier si le résident existe déjà
+        $existingResident = $residentsRepository->findOneBy([
+            'firstname' => $data['firstname'],
+            'lastname' => $data['lastname'],
+        ]);
+
+        if ($existingResident) {
+            // Le résident existe déjà, utilisez-le pour la suite du traitement
+            $resident = $existingResident;
+            $resident = $residentsMapper->mapToUpdatedEntity($resident, $data);
+        } else {
+            // Le résident n'existe pas, créez une nouvelle entité
+            $resident = new Residents();
+            $resident = $residentsMapper->mapToEntity($resident, $data);
+        }
 
         // Get the district id for the selected district
         $district = $districtsRepository->findOneByName($data['district']);
@@ -102,6 +114,7 @@ class OTVController extends AbstractController
         // Créer l'entité OTV
         $OTV = new OTV();
         $OTV = $OTVRequestMapper->mapToEntity($OTV, $data);
+
         $OTV->setResidents($resident);
 
         // Gérer le fichier uploadé

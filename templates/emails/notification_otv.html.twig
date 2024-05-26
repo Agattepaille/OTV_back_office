@@ -1,0 +1,92 @@
+{% apply inline_css %}
+<style>
+	/* Styles CSS pour l'e-mail */
+	body {
+		font-family: Arial, sans-serif;
+		font-size: 14px;
+		line-height: 1.6;
+		background-color: #f4f4f4;
+		padding: 20px;
+	}
+	.container {
+		max-width: 600px;
+		margin: 0 auto;
+		background-color: #fff;
+		padding: 20px;
+		border-radius: 5px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	}
+	h2 {
+		color: #333;
+	}
+	p {
+		margin-bottom: 20px;
+	}
+	.button {
+		display: inline-block;
+		background-color: #007bff;
+		color: #fff;
+		text-decoration: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+	}
+	.logo {
+		text-align: center;
+		margin-bottom: 20px;
+	}
+	.logo img {
+		max-width: 60px;
+	}
+</style>
+<div class="container">
+	<h2>Notification Opération Tranquillité Vacances</h2>
+	<p>Bonjour,</p>
+	<p>Un usager a dépassé la limite d'OTV par année</p>
+	<ul>
+		<li>Nom de l'usager :
+			{{ lastname }}
+			{{ firstname }}</li>
+		<li>Numéro de téléphone :
+			{{ phoneNumber }}
+		</li>
+		<li>Courriel :
+			{{ email }}
+		</li>
+		{% set address = [additionalStreetNumber, streetNumber, additionalAddressInfo, street] %}
+		<li>Quartier :
+			{{ district}}</li>
+		<li>Adresse :
+			{% for info in address %}
+				{% if info %}
+					{{ info }}
+				{% endif %}
+			{% endfor %}
+			59700 Marcq-en-Baroeul</li>
+		<li>Numéros d'OTV :
+			{% for otv in OTVs %}
+					{{ otv.id }}
+			{% endfor %}
+		</li>
+
+
+	</ul>
+
+	<table width="100%">
+		<tr>
+			<td class="logo">
+				<img src="{{ logoPolice }}" alt="Logo">
+			</td>
+			<td class="signature">
+				Cordialement,<br>
+				Police Municipale de Marcq-en-Baroeul<br>
+				111 Av. du Maréchal Foch<br>
+				59700 Marcq-en-Barœul<br>
+				Téléphone : 03 20 45 43 36
+			</td>
+
+		</tr>
+	</table>
+
+
+</div>
+{% endapply %}

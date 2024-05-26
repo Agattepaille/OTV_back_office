@@ -16,6 +16,7 @@ class OTVRepository extends ServiceEntityRepository
         parent::__construct($registry, OTV::class);
     }
 
+    // renomme les clés du tableau JSON pour les afficher dans le tableau
     public function renameJsonKeys(array $data, array $keyMapping): array
     {
         $renamedData = [];
@@ -58,9 +59,6 @@ class OTVRepository extends ServiceEntityRepository
             'additionalInfo' => 'Informations supplémentaires',
             'otvInfo' => 'Informations supplémentaires',
 
-
-
-            // Ajoutez ici toutes les clés que vous souhaitez renommer
         ];
 
         return $this->renameJsonKeys($data, $keyMapping);

@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ResidentsRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Residents
 {
     #[ORM\Id]

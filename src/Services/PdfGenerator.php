@@ -1,10 +1,5 @@
 <?php
 
-/*
-*
-*   @author: Amélie
-*
-*/
 
 namespace App\Services;
 
