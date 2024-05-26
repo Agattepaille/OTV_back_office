@@ -21,16 +21,19 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+
 
 #[Route('/otv')]
 class OTVController extends AbstractController
 {
     private $uploadsDirectory;
+    private $jwtManager;
 
-    public function __construct(string $uploadsDirectory)
+    public function __construct(string $uploadsDirectory, JWTTokenManagerInterface $jwtManager)
     {
         $this->uploadsDirectory = $uploadsDirectory;
+        $this->jwtManager = $jwtManager;
     }
 
     #[Route('/', name: 'app_otv_index', methods: ['GET'])]
@@ -78,6 +81,13 @@ class OTVController extends AbstractController
     #[Route('/new', name: 'app_otv_new', methods: ['GET', 'POST'])]
     public function new(FileUploader $fileUploader, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, OTVRequestMapper $OTVRequestMapper, ResidentsMapper $residentsMapper, DistrictsRepository $districtsRepository): Response
     {
+        // Vérifier le token JWT dans la requête
+       $requestToken = $request->headers->get('Authorization');
+        $credentials = $this->jwtManager->getCredentials($request);
+        if (!$this->jwtManager->checkCredentials($credentials, $this->getUser())) {
+            throw $this->createAccessDeniedException('Token JWT invalide.');
+        } 
+
         // Récupérer toutes les données du formulaire
         $formData = $request->request->all();
         $data = $formData['data'];

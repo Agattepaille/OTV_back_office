@@ -12,8 +12,10 @@ security:
         main:
             lazy: true
             provider: users_in_memory
-  
-
+        api:
+            pattern:   ^/api
+            stateless: true
+            jwt: ~
         secured_area:
             pattern: ^/otv/new
             stateless: true
@@ -32,6 +34,9 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/otv/new, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:
