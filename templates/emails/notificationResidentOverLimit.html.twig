@@ -43,14 +43,17 @@
 	<p>Bonjour,</p>
 	<p>Un usager a dépassé la limite d'OTV par année</p>
 	<ul>
-		<li>Nom de l'usager :
+	 	<li>Nom de l'usager :
 			{{ lastname }}
 			{{ firstname }}</li>
 		<li>Numéro de téléphone :
-			{{ phoneNumber }}
+			{{ mobilePhone }}
+			{% if landlinePhone %}
+				{{ landlinePhone}}
+			{% endif %}
 		</li>
 		<li>Courriel :
-			{{ email }}
+			{{ courriel }}
 		</li>
 		{% set address = [additionalStreetNumber, streetNumber, additionalAddressInfo, street] %}
 		<li>Quartier :
@@ -63,10 +66,10 @@
 			{% endfor %}
 			59700 Marcq-en-Baroeul</li>
 		<li>Numéros d'OTV :
-			{% for otv in OTVs %}
-					{{ otv.id }}
-			{% endfor %}
-		</li>
+			 {% for otv in OTVs %}
+					{{ otv.id }} / 
+			{% endfor %} 
+		</li> 
 
 
 	</ul>

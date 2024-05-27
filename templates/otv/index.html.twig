@@ -1,91 +1,96 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-        <div class="row g-3">
-            <!-- Titre page -->
-            <div class="d-flex justify-content-end">
-                <div class="col-10 mt-5 text-left">
-                    <h1>Liste des OTV</h1>
-                </div>
-            </div>
-            <!-- Sidebar -->
-            {{ include('_partials/_sidebar.html.twig') }}
-            <!-- Contenu principal -->
-            <div class="main-content card shadowBox col-md-10 ml-sm-auto p-4">
-                <div class="row">
-                    <!-- Filtres -->
-                    <div class="filter-container mt-1 col-md-6">
-                        <label for="districtFilter" class="form-label">Filtrer par quartier</label>
-                        <select id="districtFilter" class="form-select form-select-sm">
-                            <option selected>Tous les quartiers</option>
-                            {% for district in districts %}
-                                <option>{{ district.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="filter-container col-md-6">
-                        <div class="mt-1">
-                            <label for="startDateFilter" class="form-label">Date de début</label>
-                            <input type="date" id="startDateFilter" class="form-control">
-                        </div>
+	<!-- Sidebar -->
+	{{ include('_partials/_sidebar.html.twig') }}
+	<div class="container-fluid d-flex justify-content-between">
+		<div
+			class="row g-3">
+			<!-- Titre page -->
+			<div class="d-flex justify-content-end">
+				<div class="col-9 mt-5 text-left">
+					<h1>Liste des OTV</h1>
+				</div>
+			</div>
 
-                        <div class="mt-1">
-                            <label for="endDateFilter" class="form-label">Date de fin</label>
-                            <input type="date" id="endDateFilter" class="form-control">
-                        </div>
-                    </div>
-                </div>
+			<!-- Contenu principal -->
+			<div class="main-content card shadowBox col-md-10 ml-sm-auto mb-5 p-4">
+				<div
+					class="row">
+					<!-- Filtres -->
+					<div class="filter-container mt-1 col-md-6">
+						<label for="districtFilter" class="form-label">Filtrer par quartier</label>
+						<select id="districtFilter" class="form-select form-select-sm">
+							<option selected>Tous les quartiers</option>
+							{% for district in districts %}
+								<option>{{ district.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="filter-container col-md-6">
+						<div class="mt-1">
+							<label for="startDateFilter" class="form-label">Date de début</label>
+							<input type="date" id="startDateFilter" class="form-control">
+						</div>
 
-                <!-- Tableau des OTV -->
-                <div class="table-responsive">
-                    <table id="otvTable" class="table table-striped table-bordered table-hover">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th class="p-3">Numéro</th>
-                                <th class="p-3">Date de début</th>
-                                <th class="p-3">Date de fin</th>
-                                <th class="p-3">Résident</th>
-                                <th class="p-3">Quartier</th>
-                                <th class="p-3">Adresse</th>
-                                <th class="p-3">Téléphone</th>
-                                <th class="p-3">Email</th>
-                                <th class="p-3">Détails</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for otv in OTVs %}
-                                <tr>
-                                    <td class="p-3">{{ otv.id }}</td>
-                                    <td class="p-3">{{ otv.startDate|date('d-m-Y') }}</td>
-                                    <td class="p-3">{{ otv.endDate|date('d-m-Y') }}</td>
-                                    <td class="p-3">{{ otv.residents.lastname }} {{ otv.residents.firstname }}</td>
-                                    <td class="p-3">{{ otv.residents.districts.name }}</td>
-                                    <td class="p-3">{{ otv.residents.street }}</td>
-                                    <td class="p-3">{{ otv.residents.mobilePhone }}<br>{{ otv.residents.landlinePhone }}</td>
-                                    <td class="p-3">{{ otv.residents.email }}</td>
-                                    <td class="p-3">
-                                        <a href="{{ path('app_otv_show', {'id': otv.id}) }}" class="actionsButtons">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+						<div class="mt-1">
+							<label for="endDateFilter" class="form-label">Date de fin</label>
+							<input type="date" id="endDateFilter" class="form-control">
+						</div>
+					</div>
+				</div>
 
-    {% block javascripts %}
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-        <script src="{{ asset('assets/js/tables.js') }}"></script>
-       
-    {% endblock %}
+				<!-- Tableau des OTV -->
+				<div class="table-responsive">
+					<table id="otvTable" class="table table-striped table-bordered table-hover">
+						<thead class="thead-dark">
+							<tr>
+								<th class="p-3">Numéro</th>
+								<th class="p-3">Date de début</th>
+								<th class="p-3">Date de fin</th>
+								<th class="p-3">Résident</th>
+								<th class="p-3">Quartier</th>
+								<th class="p-3">Adresse</th>
+								<th class="p-3">Téléphone</th>
+								<th class="p-3">Email</th>
+								<th class="p-3">Détails</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for otv in OTVs %}
+								<tr>
+									<td class="p-3">{{ otv.id }}</td>
+									<td class="p-3">{{ otv.startDate|date('d-m-Y') }}</td>
+									<td class="p-3">{{ otv.endDate|date('d-m-Y') }}</td>
+									<td class="p-3">{{ otv.residents.lastname }}
+										{{ otv.residents.firstname }}</td>
+									<td class="p-3">{{ otv.residents.districts.name }}</td>
+									<td class="p-3">{{ otv.residents.street }}</td>
+									<td class="p-3">{{ otv.residents.mobilePhone }}<br>{{ otv.residents.landlinePhone }}</td>
+									<td class="p-3">{{ otv.residents.email }}</td>
+									<td class="p-3">
+										<a href="{{ path('app_otv_show', {'id': otv.id}) }}" class="actionsButtons">
+											<i class="fa-solid fa-eye"></i>
+										</a>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	{% block javascripts %}
+		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+		<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+		<script src="{{ asset('assets/js/tables.js') }}"></script>
+
+	{% endblock %}
 {% endblock %}

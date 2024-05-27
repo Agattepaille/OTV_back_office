@@ -22,6 +22,8 @@ class OTVRequestMapper
         }
 
         $jsonData = [
+            'latitude' => $data['latitude'] ?? null,
+            'longitude' => $data['longitude'] ?? null,
             'authorizedPersons' => $data['authorizedPersons'] ?? null,
             'car' => $data['car'] ?? null,
             'emergencyContact1' => $this->mapEmergencyContact($data, 1),

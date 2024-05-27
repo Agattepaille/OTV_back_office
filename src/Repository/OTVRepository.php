@@ -3,8 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\OTV;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<OTV>
@@ -64,9 +64,9 @@ class OTVRepository extends ServiceEntityRepository
         return $this->renameJsonKeys($data, $keyMapping);
     }
 
-       /**
-        * @return OTV[] Returns an array of OTV objects
-        */
+    /**
+     * @return OTV[] Returns an array of OTV objects
+     */
     public function findByStatus(bool $pending): array
     {
         return $this->createQueryBuilder('o')
@@ -91,20 +91,20 @@ class OTVRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    //    /**
-    //     * @return OTV[] Returns an array of OTV objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('o')
-    //            ->andWhere('o.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('o.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return OTV[] Returns an array of OTV objects
+     */
+    public function findByResidentId($residentId): array
+    {
+        return $this->createQueryBuilder('o')
+            ->innerJoin('o.residents', 'r')
+            ->andWhere('r.id = :id')
+            ->setParameter('id', $residentId)
+            ->orderBy('o.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
 
     //    public function findOneBySomeField($value): ?OTV
     //    {

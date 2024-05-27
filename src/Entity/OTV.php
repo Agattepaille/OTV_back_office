@@ -40,6 +40,9 @@ class OTV
     #[ORM\Column]
     private ?bool $pending = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $comments = null;
+
     // Ajouter les valeurs par défaut d'une OTV à la création
     #[ORM\PrePersist]
     public function onPrePersist(): void
@@ -152,6 +155,18 @@ class OTV
     public function setPending(bool $pending): static
     {
         $this->pending = $pending;
+
+        return $this;
+    }
+
+    public function getComments(): ?string
+    {
+        return $this->comments;
+    }
+
+    public function setComments(?string $comments): static
+    {
+        $this->comments = $comments;
 
         return $this;
     }

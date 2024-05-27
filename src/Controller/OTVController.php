@@ -99,6 +99,7 @@ class OTVController extends AbstractController
             // Le résident existe déjà, utilisez-le pour la suite du traitement
             $resident = $existingResident;
             $resident = $residentsMapper->mapToUpdatedEntity($resident, $data);
+            
         } else {
             // Le résident n'existe pas, créez une nouvelle entité
             $resident = new Residents();

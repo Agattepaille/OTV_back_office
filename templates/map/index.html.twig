@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <!-- Leaflet style and script -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+{% endblock %}
+
+{% block title %}Carte des OTV{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row g-3">
+            <!-- Titre page -->
+            <div class="d-flex justify-content-end">
+                <div class="col-10 mt-5 text-left">
+                    <h1>Carte des OTV</h1>
+                </div>
+            </div>
+            <!-- Sidebar -->
+            {{ include('_partials/_sidebar.html.twig') }}
+            <!-- Contenu principal -->
+            <div id="map" class=" container-fluid main-content card shadowBox col-md-10 ml-sm-auto p-4" style="height: 550px;"></div>
+        </div>
+    </div>
+  {% block javascripts %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var OTVs = {{ OTVs|json_encode|raw }};
+
+                var map = L.map('map').setView([50.670368, 3.096267], 14);
+
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                OTVs.forEach(function(otv) {
+                    if (otv.latitude && otv.longitude) {
+                        var popupContent = `
+                            <strong>${otv.lastname} ${otv.firstname}</strong><br>
+                            ${otv.streetNumber} ${otv.additionnalStreetNumber} ${otv.street} ${otv.additionalAddressInfo}<br>
+                            ${otv.district}<br>
+                            OTV #: ${otv.id}<br>
+                        `;
+                        L.marker([otv.latitude, otv.longitude]).addTo(map)
+                            .bindPopup(popupContent);
+                    }
+                });
+
+            
+            });
+        </script>
+    {% endblock %}
+{% endblock %}
