@@ -43,12 +43,12 @@ class OTVController extends AbstractController
 
         return $this->render('otv/index.html.twig', [
             'OTVs' => $OTVs,
-            'districts' => $districts
+            'districts' => $districts,
         ]);
     }
 
 
-    #[Route('/notice', name: 'app_otv_notice_pdf', methods: ['GET'])]
+   #[Route('/notice', name: 'app_otv_notice_pdf', methods: ['GET'])]
     public function noticePdf(OTVRepository $oTVRepository, DistrictsRepository $districtsRepository, PdfGenerator $pdfGenerator): Response
     {
         $districts = $districtsRepository->findAll();
@@ -74,7 +74,7 @@ class OTVController extends AbstractController
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="avis_de_passage.pdf"',
         ]);
-    }
+    } 
 
 
     #[Route('/new', name: 'app_otv_new', methods: ['GET', 'POST'])]

@@ -67,24 +67,24 @@ class OTVRepository extends ServiceEntityRepository
     /**
      * @return OTV[] Returns an array of OTV objects
      */
-    public function findByStatus(bool $pending): array
+    public function findByStatus(bool $ongoing): array
     {
         return $this->createQueryBuilder('o')
             ->andWhere('o.pending = :val')
-            ->setParameter('val', $pending)
+            ->setParameter('val', $ongoing)
             // ->orderBy('o.residents.districts_id', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
-    public function findByStatusAndDistrict(bool $pending, string $districtName): array
+    public function findByStatusAndDistrict(bool $ongoing, string $districtName): array
     {
         return $this->createQueryBuilder('o')
             ->join('o.residents', 'r')
             ->join('r.districts', 'd')
             ->andWhere('o.pending = :pending')
             ->andWhere('d.name = :districtName')
-            ->setParameter('pending', $pending)
+            ->setParameter('pending', $ongoing)
             ->setParameter('districtName', $districtName)
             ->orderBy('o.id', 'ASC')
             ->getQuery()

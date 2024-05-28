@@ -37,18 +37,18 @@ class OTV
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $fileName = null;
 
-    #[ORM\Column]
-    private ?bool $pending = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $comments = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $status = null;
 
     // Ajouter les valeurs par défaut d'une OTV à la création
     #[ORM\PrePersist]
     public function onPrePersist(): void
     {
-        if ($this->pending === null) {
-            $this->pending = true;
+        if ($this->status === null) {
+            $this->status = "ongoing";
         }
 
         if ($this->created_At === null) {
@@ -56,7 +56,15 @@ class OTV
         }
     }
 
-
+        // Ajouter les valeurs par défaut d'une OTV à la création
+        #[ORM\PreUpdate]
+        public function onPreUpdate(): void
+        {
+            $now = new \DateTimeImmutable("now");
+            if ($now > $this->end_Date) {
+                $this->status = "completed";
+            }
+        }
 
     public function getId(): ?int
     {
@@ -147,18 +155,6 @@ class OTV
         return $this;
     }
 
-    public function isPending(): ?bool
-    {
-        return $this->pending;
-    }
-
-    public function setPending(bool $pending): static
-    {
-        $this->pending = $pending;
-
-        return $this;
-    }
-
     public function getComments(): ?string
     {
         return $this->comments;
@@ -167,6 +163,18 @@ class OTV
     public function setComments(?string $comments): static
     {
         $this->comments = $comments;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
