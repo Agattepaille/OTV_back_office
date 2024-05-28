@@ -56,7 +56,8 @@
 
 			{% for key, value in data %}
 				<div class="data-section">
-					{% if key == "Personne1" or key == "Personne2" or key == "Personne3"  %}
+				{# ne pas afficher les champs Personne1, Personne2, Personne3, latitude et longitude #}
+					{% if key == "Personne1" or key == "Personne2" or key == "Personne3" or key == "latitude" or key == "longitude" %}
 						{% else %}
 
 
@@ -135,12 +136,15 @@
 			{% endif %}
 
 			{# Justificatif de domicile #}
+			{% if otv.pathToFile %}
+				
+			
 			<div class="data-section">
 				<h3>Justificatif de domicile</h3>
 				<div class="lign">
 					<p class="label">Fichier :</p>
 					<p>
-						<a class="invoice light" href="{{ asset(otv.pathToFile) }}" target="_blank">
+						<a class="invoice light" href="{{ path('app_file', {'id': otv.id}) }}" target="_blank">
 
 							<i class="fa-solid fa-file-pdf"></i>
 							Justificatif de domicile
@@ -148,8 +152,19 @@
 					</p>
 				</div>
 			</div>
+			{% endif %}
 
+			{# Commentaires #}
+			{% if otv.comments is not empty %}
+				<div class="data-section">
+					<h3>Commentaires</h3>
+					<div class="lign">
+						<p>{{ otv.comments }}</p>
+					</div>
+				</div>
+			{% endif %}
 
+			{# Actions #}
 			<div class="lign links">
 				<p>
 					<a class="redirect" href="{{ path('app_otv_index') }}">

@@ -14,10 +14,9 @@
         
         {% block stylesheets %}
         {% endblock %}
+            <script src="{{ asset('assets/js/navigation.js') }}"></script>
 
         {% block javascripts %}
-               
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
     <body>

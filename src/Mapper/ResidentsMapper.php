@@ -11,8 +11,11 @@ class ResidentsMapper
 
 
         // Set the attributes on the entity
-        $resident->setCivility($data['civility'] ?? null);
-        $resident->setLastname($data['lastname'] ?? null);
+        if (isset($data['civility'])) {
+            $resident->setCivility($data['civility']);
+        } elseif (isset($data['otherCivility'])) {
+            $resident->setCivility($data['otherCivility']);
+        }        $resident->setLastname($data['lastname'] ?? null);
         $resident->setFirstname($data['firstname'] ?? null);
         $resident->setMobilePhone($data['mobilePhone'] ?? null);
         $resident->setLandlinePhone($data['landlinePhone'] ?? null);
@@ -22,10 +25,24 @@ class ResidentsMapper
         $resident->setAdditionalStreetNumber($data['additionalStreetNumber'] ?? null);
         $resident->setAdditionalAddressInfo($data['additionalAddressInfo'] ?? null);
 
+        return $resident;
+    }
+
+    public function mapToUpdatedEntity(Residents $resident, $data): Residents
+    {
 
 
-        // $resident->setAuthorization($data['authorization']);
-        // ... set other properties as needed
+        // Set the attributes on the entity
+        $resident->setCivility($data['civility'] ?? null);
+        // $resident->setLastname($data['lastname'] ?? null);
+        // $resident->setFirstname($data['firstname'] ?? null);
+        $resident->setMobilePhone($data['mobilePhone'] ?? null);
+        $resident->setLandlinePhone($data['landlinePhone'] ?? null);
+        $resident->setEmail($data['email'] ?? null);
+        $resident->setStreet($data['street'] ?? null);
+        $resident->setStreetNumber($data['streetNumber'] ?? null);
+        $resident->setAdditionalStreetNumber($data['additionalStreetNumber'] ?? null);
+        $resident->setAdditionalAddressInfo($data['additionalAddressInfo'] ?? null);
 
         return $resident;
     }
