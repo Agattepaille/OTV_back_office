@@ -3,25 +3,22 @@
 	<link rel="stylesheet" href="{{ asset('assets/style/users.css') }}">
 {% endblock %}
 
-{% block title %}Utilisateur
-{% endblock %}
+{% block title %}Mon compte{% endblock %}
 
 {% block body %}
-	<div
+    <div
 		class="pageWrapper">
 		<!-- Sidebar -->
 		{{ include('_partials/_sidebar.html.twig') }}
 		<div class="mainContent">
-			<h1>Compte de
-				{{user.firstname}}
-				{{user.lastname}}
+			<h1>Mon compte
 			</h1>
 			<div class=" cardContainer shadowBox card">
 
 
 				{{ include('user/_form.html.twig', {'button_label': 'Enregistrer les modifications'}) }}
 
-				<a href="{{ path('app_user_index') }}">Retours à la liste utilisateurs</a>
+				<a href="{{ path('app_otv_index') }}">Retours à la liste des OTV</a>
 
 				{{ include('user/_delete_form.html.twig') }}
 			</div>
