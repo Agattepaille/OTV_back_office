@@ -24,17 +24,17 @@ class UserFixtures extends Fixture
         $faker = Factory::create('fr_FR');
 
         // création d'un admin
-        $adminUser = new User();
+       /*  $adminUser = new User();
         $adminUser->setLastname($faker->lastName())
             ->setFirstname($faker->firstName())
             ->setRoles(['ROLE_ADMIN'])
             ->setEmail('admin@otv.com');
         $password = $this->passwordHasher->hashPassword($adminUser, 'password');
         $adminUser->setPassword($password);
-        $manager->persist($adminUser);
+        $manager->persist($adminUser); */
 
         // création d'utilisateurs 
-   /*      for ($i = 0; $i < 5; $i++) {
+      for ($i = 0; $i < 5; $i++) {
             $users = new User();
             $users->setLastname($faker->lastName())
                     ->setFirstname($faker->firstName())
@@ -44,7 +44,7 @@ class UserFixtures extends Fixture
 
             $password = $this->passwordHasher->hashPassword($users, $faker->word());
             $users->setPassword($password);
-        }      */
+        }     
 
         // enregistrement en BDD
         $manager->flush();

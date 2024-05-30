@@ -1,11 +1,24 @@
 {% extends 'base.html.twig' %}
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/style/users.css') }}">
+{% endblock %}
 
-{% block title %}New User{% endblock %}
+{% block title %}New User
+{% endblock %}
 
 {% block body %}
-    <h1>Create new User</h1>
+	<div
+		class="pageWrapper">
+		<!-- Sidebar -->
+		{{ include('_partials/_sidebar.html.twig') }}
+		<div class="mainContent">
 
-    {{ include('user/_form.html.twig') }}
+			<h1>Create new User</h1>
+            <div class=" cardContainer shadowBox card">
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+                {{ include('user/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+                <a href="{{ path('app_user_index') }}">Retour à la liste utilisateurs</a>
+            </div>
+		</div>
+	</div>
 {% endblock %}

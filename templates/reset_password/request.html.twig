@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/style/login.css') }}">
+{% endblock %}
+
+{% block title %}OTV - Mot de passe oublié
+{% endblock %}
+
+{% block body %}
+
+	<body class="text-center">
+		{{ form_start(requestForm, {'attr': { 'class' : 'form-signin'}}) }}
+
+		{% for flash_error in app.flashes('reset_password_error') %}
+			<div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+		{% endfor %}
+		<img class="mb-4" src="{{ asset('assets/images/Logo_Police_Municipale__France_.webp') }}" alt="" height="80">
+		<h1 class="h3 mb-3 font-weight-normal">Mot de passe oublié</h1>
+
+		{{ form_row(requestForm.email) }}
+		<div>
+			<small>
+				Entrez l’adresse email associée à votre compte.
+			</small>
+		</div>
+
+		<button class="btn btn-lg mt-3 btn-primary btn-block" type="submit">Continuer</button>
+
+	{{ form_end(requestForm) }}	
+</body>
+{% endblock %}

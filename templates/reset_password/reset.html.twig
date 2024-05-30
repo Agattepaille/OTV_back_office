@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/style/login.css') }}">
+{% endblock %}
+
+{% block title %}OTV - Nouveau mot de passe{% endblock %}
+
+{% block body %}
+    
+<body class="text-center">
+    {{ form_start(resetForm, {'attr': { 'class' : 'form-signin'}}) }}
+    <img class="mb-4" src="{{ asset('assets/images/Logo_Police_Municipale__France_.webp') }}" alt="" height="80">
+    <h1 class="h3 mb-3 font-weight-normal">Nouveau mot de passe</h1>
+   
+
+        {# {{ form_row(resetForm.plainPassword) }} #}
+        {{ form_row(resetForm.plainPassword.first)}}
+				<div class="toggle-password">
+					<i id="togglePasswordNew" class="fas fa-eye eye" aria-hidden="true"></i>
+				</div>
+                {{ form_row(resetForm.plainPassword.second)}}
+				<div class="toggle-password" >
+					<i id="togglePasswordRepeat" class="fas fa-eye eye" aria-hidden="true"></i>
+				</div>
+        <button class="btn btn-lg mt-3 btn-primary btn-block">Sauvegarder</button>
+    {{ form_end(resetForm) }}
+</body>
+<script>
+		function togglePassword(inputId, iconId) {
+let input = document.getElementById(inputId);
+let icon = document.getElementById(iconId);
+if (input.type === "password") {
+input.type = "text";
+icon.classList.remove('fa-eye');
+icon.classList.add('fa-eye-slash');
+} else {
+input.type = "password";
+icon.classList.remove('fa-eye-slash');
+icon.classList.add('fa-eye');
+}
+}
+
+document.getElementById("togglePasswordNew").addEventListener('click', function () {
+togglePassword('change_password_form_plainPassword_first', 'togglePasswordNew');
+});
+
+document.getElementById("togglePasswordRepeat").addEventListener('click', function () {
+togglePassword('change_password_form_plainPassword_second', 'togglePasswordRepeat');
+});
+	</script>
+{% endblock %}

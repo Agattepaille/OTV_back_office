@@ -1,34 +1,41 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}User{% endblock %}
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/style/users.css') }}">
+{% endblock %}
+{% block title %}Utilisateur
+{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
+	<div
+		class="pageWrapper">
+		<!-- Sidebar -->
+		{{ include('_partials/_sidebar.html.twig') }}
+		<div class="mainContent">
+			<h1>Compte de
+				{{user.firstname}}
+				{{user.lastname}}
+			</h1>
+			<div class=" cardContainer shadowBox card">
+				 <div class="lign">
+                    <p class="label">Nom</p>
+                    <p>{{ user.lastname }}</p>
+                </div>
+                <div class="lign">
+                    <p class="label">Prénom</p>
+                    <p>{{ user.firstname }}</p>
+                </div>
+                <div class="lign">
+					<p class="label">Courriel</p>
+					<p>{{ user.email }}</p>
+				</div>
+               
+				<a href="{{ path('app_user_index') }}">back to list</a>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-        </tbody>
-    </table>
+				<a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
+			</div>
+		</div>
+	</div>
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
 
-    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-
-    {{ include('user/_delete_form.html.twig') }}
+	{{ include('user/_delete_form.html.twig') }}
 {% endblock %}
