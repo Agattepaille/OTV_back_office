@@ -3,23 +3,24 @@
 	<link rel="stylesheet" href="{{ asset('assets/style/users.css') }}">
 {% endblock %}
 
-{% block title %}Mon compte{% endblock %}
+{% block title %}Mon compte
+{% endblock %}
 
 {% block body %}
-    <div
-		class="pageWrapper">
-		<!-- Sidebar -->
-		{{ include('_partials/_sidebar.html.twig') }}
-		<div class="mainContent">
-			<h1>Mon compte
-			</h1>
-			<div class=" cardContainer shadowBox card">
 
-
+	<!-- Sidebar -->
+	{{ include('_partials/_sidebar.html.twig') }}
+	<!-- Navbar -->
+	{{ include('_partials/_navbar.html.twig') }}
+	<!-- Main content -->
+	<div
+		class="content">
+		<!-- Card container -->
+		<div class="card card-container">
+			<div class="card-body">
+				<h1>Mon compte</h1>
 				{{ include('user/_form.html.twig', {'button_label': 'Enregistrer les modifications'}) }}
-
 				<a href="{{ path('app_otv_index') }}">Retours à la liste des OTV</a>
-
 				{{ include('user/_delete_form.html.twig') }}
 			</div>
 		</div>

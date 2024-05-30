@@ -8,46 +8,50 @@
 {% endblock %}
 
 {% block body %}
-	<div
-		class="pageWrapper">
 		<!-- Sidebar -->
 		{{ include('_partials/_sidebar.html.twig') }}
-		<div class="mainContent">
-		<h1>Liste des utilisateurs</h1>
-		<div class=" tableContainer shadowBox card">
-			<table class="table table-hover">
-				<thead>
-					<tr>
-						<th>Email</th>
-						<th>Nom</th>
-                        <th>Prénom</th>
-						<th>actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for user in users %}
-						<tr>
-							<td>{{ user.email }}</td>
-                            <td>{{ user.firstname }}</td>
-                            <td>{{ user.lastname }}</td>
-							<td>
-								{# <a href="{{ path('app_user_show', {'id': user.id}) }}">Détails</a>
-								<a href="{{ path('app_user_edit', {'id': user.id}) }}">Modifier</a> #}
-								<a href="{{ path('app_user_edit', {'id': user.id}) }}" class="actionsButtons">
-											<i class="fa-solid fa-eye"></i>
-										</a>
-							</td>
-						</tr>
-					{% else %}
-						<tr>
-							<td colspan="5">Aucun utilisateur trouvé</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-            
-	<a href="{{ path('app_user_new') }}">Ajouter un utilisateur</a>
+		<!-- Navbar -->
+		{{ include('_partials/_navbar.html.twig') }}
+		<!-- Main content -->
+		<div class="content">
+			<!-- Card container -->
+			<div class="card card-container">
+				<div class="card-body">
+					<h1>Liste des utilisateurs</h1>
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>Email</th>
+									<th>Nom</th>
+									<th>Prénom</th>
+									<th>actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for user in users %}
+									<tr>
+										<td>{{ user.email }}</td>
+										<td>{{ user.firstname }}</td>
+										<td>{{ user.lastname }}</td>
+										<td>
+											{# <a href="{{ path('app_user_show', {'id': user.id}) }}">Détails</a>
+											<a href="{{ path('app_user_edit', {'id': user.id}) }}">Modifier</a> #}
+											<a href="{{ path('app_user_edit', {'id': user.id}) }}" class="actionsButtons">
+														<i class="fa-solid fa-eye"></i>
+													</a>
+										</td>
+									</tr>
+								{% else %}
+									<tr>
+										<td colspan="5">Aucun utilisateur trouvé</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+						
+						<a href="{{ path('app_user_new') }}">Ajouter un utilisateur</a>
+				</div>
+			</div>
 		</div>
-		</div>
-	</div>
+
 {% endblock %}
