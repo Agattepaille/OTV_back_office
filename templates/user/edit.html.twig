@@ -7,22 +7,25 @@
 {% endblock %}
 
 {% block body %}
-	<div
-		class="pageWrapper">
 		<!-- Sidebar -->
-		{{ include('_partials/_sidebar.html.twig') }}
-		<div class="mainContent">
-			<h1>Compte de
-				{{user.firstname}}
-				{{user.lastname}}
-			</h1>
-			<div class=" cardContainer shadowBox card">
+	{{ include('_partials/_sidebar.html.twig') }}
+	<!-- Navbar -->
+	{{ include('_partials/_navbar.html.twig') }}
 
+		<!-- Main content -->
+	<div class="content">
+		<!-- Card container -->
+		<div class="card card-container">
+			<div
+				class="card-body">
+
+				<h1>Compte de
+					{{user.firstname}}
+					{{user.lastname}}
+				</h1>
 
 				{{ include('user/_form.html.twig', {'button_label': 'Enregistrer les modifications'}) }}
-
 				<a href="{{ path('app_user_index') }}">Retours à la liste utilisateurs</a>
-
 				{{ include('user/_delete_form.html.twig') }}
 			</div>
 		</div>
