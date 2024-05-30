@@ -39,15 +39,15 @@ class OTVLimitVerifier
             $context = [
                 'lastname' => $resident->getLastname(),
                 'firstname' => $resident->getFirstname(),
-                'mobilePhone' => $resident->getMobilePhone(),
-                'landlinePhone' => $resident->getLandlinePhone(),
-                'courriel' => $resident->getEmail(),
+                'mobilePhone' => $otv->getMobilePhone(),
+                'landlinePhone' => $otv->getLandlinePhone(),
+                'courriel' => $otv->getEmail(),
                 'logoPolice' => $logoPolice,
-                'street' => $resident->getStreet(),
-                'streetNumber' => $resident->getStreetNumber(),
-                'additionalStreetNumber' => $resident->getAdditionalStreetNumber(),
-                'additionalAddressInfo' => $resident->getAdditionalAddressInfo(),
-                'district' => $resident->getDistricts()->getName(), 
+                'street' => $otv->getAddress()->getStreet(),
+                'streetNumber' => $otv->getAddress()->getStreetNumber(),
+                'additionalStreetNumber' => $otv->getAddress()->getAdditionnalStreetNumber(),
+                'additionalAddressInfo' => $otv->getAddress()->getAdditionalAddressInfo(),
+                'district' => $otv->getDistrict()->getName(), 
                 'OTVs' => $resident->getOTVs(),
             ];
 

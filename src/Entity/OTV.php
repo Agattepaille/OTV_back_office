@@ -24,6 +24,15 @@ class OTV
     #[ORM\Column]
     private ?\DateTimeImmutable $created_At = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $mobilePhone = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $landlinePhone = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
     #[ORM\Column(nullable: true)]
     private ?array $data = null;
 
@@ -42,6 +51,14 @@ class OTV
 
     #[ORM\Column(length: 255)]
     private ?string $status = null;
+
+    #[ORM\ManyToOne(inversedBy: 'otv')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Address $address = null;
+
+    #[ORM\ManyToOne(inversedBy: 'OTVs')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Districts $district = null;
 
     // Ajouter les valeurs par défaut d'une OTV à la création
     #[ORM\PrePersist]
@@ -103,6 +120,43 @@ class OTV
     public function setCreatedAt(\DateTimeImmutable $created_At): static
     {
         $this->created_At = $created_At;
+
+        return $this;
+    }
+
+    
+    public function getMobilePhone(): ?string
+    {
+        return $this->mobilePhone;
+    }
+
+    public function setMobilePhone(string $mobilePhone): static
+    {
+        $this->mobilePhone = $mobilePhone;
+
+        return $this;
+    }
+
+    public function getLandlinePhone(): ?string
+    {
+        return $this->landlinePhone;
+    }
+
+    public function setLandlinePhone(?string $landlinePhone): static
+    {
+        $this->landlinePhone = $landlinePhone;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
 
         return $this;
     }
@@ -178,4 +232,29 @@ class OTV
 
         return $this;
     }
+
+    public function getAddress(): ?Address
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?Address $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getDistrict(): ?Districts
+    {
+        return $this->district;
+    }
+
+    public function setDistrict(?Districts $district): static
+    {
+        $this->district = $district;
+
+        return $this;
+    }
+
 }

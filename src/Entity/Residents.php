@@ -25,36 +25,11 @@ class Residents
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $mobilePhone = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $landlinePhone = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $street = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $streetNumber = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $additionalStreetNumber = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $additionalAddressInfo = null;
-
     /**
      * @var Collection<int, OTV>
      */
     #[ORM\OneToMany(targetEntity: OTV::class, mappedBy: 'residents', orphanRemoval: true)]
     private Collection $oTVs;
-
-    #[ORM\ManyToOne(inversedBy: 'residents')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Districts $districts = null;
 
 
     public function __construct()
@@ -103,89 +78,6 @@ class Residents
         return $this;
     }
 
-    public function getMobilePhone(): ?string
-    {
-        return $this->mobilePhone;
-    }
-
-    public function setMobilePhone(string $mobilePhone): static
-    {
-        $this->mobilePhone = $mobilePhone;
-
-        return $this;
-    }
-
-    public function getLandlinePhone(): ?string
-    {
-        return $this->landlinePhone;
-    }
-
-    public function setLandlinePhone(?string $landlinePhone): static
-    {
-        $this->landlinePhone = $landlinePhone;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function getStreet(): ?string
-    {
-        return $this->street;
-    }
-
-    public function setStreet(string $street): static
-    {
-        $this->street = $street;
-
-        return $this;
-    }
-
-    public function getStreetNumber(): ?string
-    {
-        return $this->streetNumber;
-    }
-
-    public function setStreetNumber(?string $streetNumber): static
-    {
-        $this->streetNumber = $streetNumber;
-
-        return $this;
-    }
-
-    public function getAdditionalStreetNumber(): ?string
-    {
-        return $this->additionalStreetNumber;
-    }
-
-    public function setAdditionalStreetNumber(?string $additionalStreetNumber): static
-    {
-        $this->additionalStreetNumber = $additionalStreetNumber;
-
-        return $this;
-    }
-
-    public function getAdditionalAddressInfo(): ?string
-    {
-        return $this->additionalAddressInfo;
-    }
-
-    public function setAdditionalAddressInfo(?string $additionalAddressInfo): static
-    {
-        $this->additionalAddressInfo = $additionalAddressInfo;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, OTV>
@@ -217,16 +109,5 @@ class Residents
         return $this;
     }
 
-    public function getDistricts(): ?Districts
-    {
-        return $this->districts;
-    }
-
-    public function setDistricts(?Districts $districts): static
-    {
-        $this->districts = $districts;
-
-        return $this;
-    }
 
 }

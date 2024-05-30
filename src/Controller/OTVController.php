@@ -48,7 +48,7 @@ class OTVController extends AbstractController
     }
 
 
-   #[Route('/notice', name: 'app_otv_notice_pdf', methods: ['GET'])]
+    #[Route('/notice', name: 'app_otv_notice_pdf', methods: ['GET'])]
     public function noticePdf(OTVRepository $oTVRepository, DistrictsRepository $districtsRepository, PdfGenerator $pdfGenerator): Response
     {
         $districts = $districtsRepository->findAll();
@@ -74,7 +74,7 @@ class OTVController extends AbstractController
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="avis_de_passage.pdf"',
         ]);
-    } 
+    }
 
 
     #[Route('/new', name: 'app_otv_new', methods: ['GET', 'POST'])]
@@ -99,24 +99,20 @@ class OTVController extends AbstractController
             // Le résident existe déjà, utilisez-le pour la suite du traitement
             $resident = $existingResident;
             $resident = $residentsMapper->mapToUpdatedEntity($resident, $data);
-            
         } else {
             // Le résident n'existe pas, créez une nouvelle entité
             $resident = new Residents();
             $resident = $residentsMapper->mapToEntity($resident, $data);
         }
 
-        // Get the district id for the selected district
-        $district = $districtsRepository->findOneByName($data['district']);
-
-        // Set the district on the resident
-        $resident->setDistricts($district);
-
         // Créer l'entité OTV
         $OTV = new OTV();
         $OTV = $OTVRequestMapper->mapToEntity($OTV, $data);
-
         $OTV->setResidents($resident);
+        // Get the district id for the selected district
+        $district = $districtsRepository->findOneByName($data['district']);
+        // Set the district on the resident
+        $OTV->setDistrict($district);
 
         // Gérer le fichier uploadé
         /** @var UploadedFile $file **/
