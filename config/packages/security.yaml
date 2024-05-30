@@ -13,6 +13,14 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        # api:
+        #     pattern: ^/otv/new
+        #     stateless: true
+        #     custom_authenticators: 
+        #         - App\Security\ApiKeyAuthenticator
+        api:
+            pattern: ^/otv/new
+            security: false
         main:
             lazy: true
             provider: app_user_provider
@@ -21,6 +29,7 @@ security:
                 check_path: app_login
                 enable_csrf: true
                 default_target_path: app_otv_index
+
 
             logout:
                 path: app_logout
@@ -39,6 +48,8 @@ security:
     access_control:
         # - { path: ^/users, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        # - { path: ^/otv/new, methods: POST, roles: IS_AUTHENTICATED_ANONYMOUSLY  }
+
        
 
 when@test:
