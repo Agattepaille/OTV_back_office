@@ -2,9 +2,7 @@
 
 namespace App\Services;
 
-use App\Kernel;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
@@ -33,6 +31,7 @@ class FileUploader
                 $storage,
                 $newFilename
             );
+            $this->logger->info('File uploaded successfully');
         } catch (FileException $e) {
             $this->logger->error('File upload error: ' . $e->getMessage());
             throw new \Exception('File upload error: ' . $e->getMessage());
@@ -43,9 +42,6 @@ class FileUploader
 
     private function removeAccents($string): string
     {
-        if (!extension_loaded('intl')) {
-            throw new \Exception('The intl extension is not loaded.');
-        }
 
         $normalized = \Normalizer::normalize($string, \Normalizer::FORM_D);
         return preg_replace('/[\x{0300}-\x{036f}]/u', '', $normalized);

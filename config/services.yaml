@@ -15,7 +15,6 @@ services:
             $uploadsDirectory: '%kernel.project_dir%/var/uploads'
             $apiKey: '%env(resolve:API_KEY)%'
             $projectDir: '%kernel.project_dir%'
-            # $uploadsDirectory: 'var/uploads'
 
 
     # makes classes in src/ available to be used as services
@@ -32,12 +31,6 @@ services:
             - { name: 'doctrine.event_listener', event: 'prePersist' }
             - { name: 'doctrine.event_listener', event: 'preUpdate' }
 
-        # arguments:
-        #         $apiKey: '%env(resolve:API_KEY)%'
-
-    # App\Services\FileUploader:
-    #     arguments:
-    #         $uploadsDirectory: '%kernel.project_dir%/public/uploads'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

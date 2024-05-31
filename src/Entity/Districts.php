@@ -25,9 +25,16 @@ class Districts
     #[ORM\OneToMany(targetEntity: Residents::class, mappedBy: 'districts')]
     private Collection $residents;
 
+    /**
+     * @var Collection<int, OTV>
+     */
+    #[ORM\OneToMany(targetEntity: OTV::class, mappedBy: 'district')]
+    private Collection $OTVs;
+
     public function __construct()
     {
         $this->residents = new ArrayCollection();
+        $this->OTVs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -71,6 +78,36 @@ class Districts
             // set the owning side to null (unless already changed)
             if ($resident->getDistricts() === $this) {
                 $resident->setDistricts(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OTV>
+     */
+    public function getOTVs(): Collection
+    {
+        return $this->OTVs;
+    }
+
+    public function addOTV(OTV $oTV): static
+    {
+        if (!$this->OTVs->contains($oTV)) {
+            $this->OTVs->add($oTV);
+            $oTV->setDistrict($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOTV(OTV $oTV): static
+    {
+        if ($this->OTVs->removeElement($oTV)) {
+            // set the owning side to null (unless already changed)
+            if ($oTV->getDistrict() === $this) {
+                $oTV->setDistrict(null);
             }
         }
 

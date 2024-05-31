@@ -21,6 +21,10 @@ class OTVRequestMapper
             throw new Exception("Invalid date format provided.");
         }
 
+        $otv->setMobilePhone($data['mobilePhone'] ?? null);
+        $otv->setLandlinePhone($data['landlinePhone'] ?? null);
+        $otv->setEmail($data['email'] ?? null);
+
         $jsonData = [
             'latitude' => $data['latitude'] ?? null,
             'longitude' => $data['longitude'] ?? null,

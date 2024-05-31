@@ -6,9 +6,11 @@
 		<li class="nav-item">
 			<a id="mapNav" href="{{ path('app_map') }}" class="nav-link">Carte des OTV</a>
 		</li>
-		<li class="nav-item">
-			<a id="usersNav" href="{{ path('app_user_index') }}" class="nav-link">Utilisateurs</a>
-		</li>
+		{% if is_granted('ROLE_ADMIN') %}
+			<li class="nav-item">
+				<a id="usersNav" href="{{ path('app_user_index') }}" class="nav-link">Utilisateurs</a>
+			</li>
+		{% endif %}
 		<li class="nav-item">
 			<a id="profileNav" href="{{ path('app_profile_edit', {'id': app.user.id}) }}" class="nav-link">Mon compte</a>
 		</li> 
