@@ -9,13 +9,12 @@
 {% block body %}
 	<body class="text-center">
 		<form class="form-signin" method="post">
-			{% if error %}
-				<div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-			{% endif %}
-
+			<div class="mb-3">
+				{% include "_partials/_flashMessages.html.twig" %}
+			</div>
 			{% if app.user %}
 				<div class="mb-3">
-					Vous êtes connecté en tant que 
+					Vous êtes connecté en tant que
 					{{ app.user.userIdentifier }},
 					<a href="{{ path('app_logout') }}">Se déconnecter</a>
 				</div>
@@ -24,10 +23,10 @@
 			<img class="mb-4" src="{{ asset('assets/images/Logo_Police_Municipale__France_.webp') }}" alt="" height="80">
 			<h1 class="h3 mb-3 font-weight-normal">OTV - Connexion</h1>
 
-			<label  for="username" class="sr-only">Courriel</label>
+			<label for="username" class="sr-only">Courriel</label>
 			<input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" placeholder="Courriel" autocomplete="email" required autofocus>
-			
-            <label for="password" class="sr-only">Mot de passe</label>
+
+			<label for="password" class="sr-only">Mot de passe</label>
 			<input type="password" id="password" name="_password" class="form-control" placeholder="Mot de passe" autocomplete="current-password" required>
 
 			<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
@@ -39,7 +38,7 @@
 			</div>
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Se connecter</button>
 			<div class="mt-3">
-			<a class="link" href="{{ path('app_forgot_password_request') }}">Mot de passe oublié ?</a>
+				<a class="link" href="{{ path('app_forgot_password_request') }}">Mot de passe oublié ?</a>
 			</div>
 		</form>
 	</body>

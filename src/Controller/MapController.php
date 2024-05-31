@@ -3,15 +3,30 @@
 namespace App\Controller;
 
 use App\Repository\OTVRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MapController extends AbstractController
 {
+    private Security $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     #[Route('/map', name: 'app_map')]
     public function index(OTVRepository $oTVRepository): Response
     {
+        $currentUser = $this->security->getUser();
+        // Vérifier si l'utilisateur est bien connecté
+        if (!$currentUser) {
+            $this->addFlash('error',  "Vous devez être connecté pour accéder à cette page");
+            return $this->redirectToRoute('app_login');
+        }
+        
         $OTVs = $oTVRepository->findAll();
         
         // Extract latitude and longitude from the data array
@@ -22,11 +37,11 @@ class MapController extends AbstractController
                 'longitude' => $otv->getData()['longitude'] ?? null,
                 'lastname' => $otv->getResidents()->getlastName(), 
                 'firstname' => $otv->getResidents()->getfirstName(),
-                'street' => $otv->getResidents()->getStreet(),
-                'streetNumber' => $otv->getResidents()->getStreetNumber() ?? '',
-                'additionnalStreetNumber' => $otv->getResidents()->getAdditionalStreetNumber() ?? '',
-                'additionalAddressInfo' => $otv->getResidents()->getAdditionalAddressInfo() ?? '',
-                'district' => $otv->getResidents()->getDistricts()->getName(),
+                'street' => $otv->getAddress()->getStreet(),
+                'streetNumber' => $otv->getAddress()->getStreetNumber() ?? '',
+                'additionnalStreetNumber' => $otv->getAddress()->getAdditionnalStreetNumber() ?? '',
+                'additionalAddressInfo' => $otv->getAddress()->getAdditionalAddressInfo() ?? '',
+                'district' => $otv->getDistrict()->getName(),
             ];
         }, $OTVs);
 

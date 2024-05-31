@@ -2,20 +2,23 @@
 
 namespace App\Controller;
 
-use App\Entity\Address;
 use App\Entity\OTV;
 use App\Form\OTVType;
+use App\Entity\Address;
 use App\Entity\Residents;
 use Psr\Log\LoggerInterface;
+use App\Mapper\AddressMapper;
 use App\Services\FileUploader;
 use App\Services\PdfGenerator;
+use App\Mapper\ResidentsMapper;
 use App\Mapper\OTVRequestMapper;
-use App\Repository\AddressRepository;
 use App\Repository\OTVRepository;
+use App\Repository\AddressRepository;
 use App\Security\ApiKeyAuthenticator;
 use App\Repository\DistrictsRepository;
 use App\Repository\ResidentsRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -29,16 +32,26 @@ class OTVController extends AbstractController
 {
     private $uploadsDirectory;
     private $apiKeyAuthenticator;
+    private Security $security;
 
-    public function __construct(string $uploadsDirectory, ApiKeyAuthenticator $apiKeyAuthenticator)
+    public function __construct(Security $security, string $uploadsDirectory, ApiKeyAuthenticator $apiKeyAuthenticator)
     {
         $this->uploadsDirectory = $uploadsDirectory;
         $this->apiKeyAuthenticator = $apiKeyAuthenticator;
+        $this->security = $security;
     }
 
     #[Route('/', name: 'app_otv_index', methods: ['GET'])]
     public function index(OTVRepository $oTVRepository, DistrictsRepository $districtsRepository): Response
     {
+       
+        $currentUser = $this->security->getUser();
+        // Vérifier si l'utilisateur est bien connecté
+        if (!$currentUser) {
+            $this->addFlash('error',  "Vous devez être connecté pour accéder à cette page");
+            return $this->redirectToRoute('app_login');
+        }
+
         $OTVs = $oTVRepository->findAll();
         $districts = $districtsRepository->findAll();
 
@@ -79,13 +92,22 @@ class OTVController extends AbstractController
 
 
     #[Route('/new', name: 'app_otv_new', methods: ['GET', 'POST'])]
-    public function new(AddressRepository $addressRepository, ResidentsRepository $residentsRepository, FileUploader $fileUploader, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, OTVRequestMapper $OTVRequestMapper, DistrictsRepository $districtsRepository): Response
-    {
+    public function new(
+        AddressMapper $addressMapper,
+        ResidentsMapper $residentsMapper,
+        AddressRepository $addressRepository,
+        ResidentsRepository $residentsRepository,
+        FileUploader $fileUploader,
+        LoggerInterface $logger,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        OTVRequestMapper $OTVRequestMapper,
+        DistrictsRepository $districtsRepository
+    ): Response {
         if (!$this->apiKeyAuthenticator->authenticate($request)) {
-            return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
             $logger->info('Unauthorized request');
+            return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
-        
 
         // Récupérer toutes les données du formulaire
         $formData = $request->request->all();
@@ -105,7 +127,8 @@ class OTVController extends AbstractController
         } else {
             // Le résident n'existe pas, créez une nouvelle entité
             $resident = new Residents();
-            $resident = $OTVRequestMapper->mapToEntity($resident, $data);
+            $resident = $residentsMapper->mapToEntity($resident, $data);
+            $logger->info('New resident created: ' . json_encode($resident));
         }
 
         // Vérifier si l'adresse existe déjà
@@ -124,7 +147,8 @@ class OTVController extends AbstractController
         } else {
             // Le résident n'existe pas, créez une nouvelle entité
             $address = new Address();
-            $address = $OTVRequestMapper->mapToEntity($address, $data);
+            $address = $addressMapper->mapToEntity($address, $data);
+            $logger->info('New address created: ' . json_encode($address));
         }
 
         // Créer l'entité OTV
@@ -136,27 +160,39 @@ class OTVController extends AbstractController
         $district = $districtsRepository->findOneByName($data['district']);
         // Set the district on the resident
         $OTV->setDistrict($district);
+        $logger->info('New OTV created: ' . json_encode($OTV));
 
         // Gérer le fichier uploadé
         /** @var UploadedFile $file **/
         $file = $request->files->get('file');
         if ($file) {
+            $logger->info('File received: ' . $file->getClientOriginalName());
             try {
+                $logger->info('Starting file upload...');
                 $newFilename = $fileUploader->uploadFile($file, $data['lastname'], $data['firstname']);
+                $logger->info('File upload successful, new filename: ' . $newFilename);
                 $OTV->setFileName($newFilename);
                 $OTV->setPathToFile($this->uploadsDirectory . '/' . $newFilename);
+                $logger->info('File path set on OTV');
             } catch (\Exception $e) {
-                return new JsonResponse(['error' => $e->getMessage()], 500);
+                $logger->error('File upload error: ' . $e->getMessage());
+                return new JsonResponse(['error' => 'File upload failed: ' . $e->getMessage()], 500);
             }
+        } else {
+            $logger->info('No file received');
         }
 
         // Persister les entités
-        $entityManager->persist($resident);
-        $entityManager->persist($OTV);
 
+        $entityManager->persist($resident);
+        $entityManager->persist($address);
+        $entityManager->persist($OTV);
+        $logger->info('Entities persisted');
+   
         // Flush les entités
         try {
             $entityManager->flush();
+            $logger->info('Entities flushed');
         } catch (\Exception $e) {
             $logger->error($e->getMessage());
             return new JsonResponse(['error' => $e->getMessage()], 500);
@@ -170,6 +206,14 @@ class OTVController extends AbstractController
     #[Route('/{id}', name: 'app_otv_show', methods: ['GET'])]
     public function show(OTV $otv, OTVRepository $OTVRepository): Response
     {
+        
+        $currentUser = $this->security->getUser();
+        // Vérifier si l'utilisateur est bien connecté
+        if (!$currentUser) {
+            $this->addFlash('error',  "Vous devez être connecté pour accéder à cette page");
+            return $this->redirectToRoute('home');
+        }
+
         $renamedData = $OTVRepository->getRenamedData($otv);
 
         return $this->render('otv/show.html.twig', [
@@ -181,6 +225,14 @@ class OTVController extends AbstractController
     #[Route('/{id}/edit', name: 'app_otv_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, OTV $oTV, EntityManagerInterface $entityManager): Response
     {
+        
+        $currentUser = $this->security->getUser();
+        // Vérifier si l'utilisateur est bien connecté
+        if (!$currentUser) {
+            $this->addFlash('error',  "Vous devez être connecté pour accéder à cette page");
+            return $this->redirectToRoute('app_login');
+        }
+
         $form = $this->createForm(OTVType::class, $oTV);
         $form->handleRequest($request);
 
@@ -199,6 +251,13 @@ class OTVController extends AbstractController
     #[Route('/{id}', name: 'app_otv_delete', methods: ['POST'])]
     public function delete(Request $request, OTV $oTV, EntityManagerInterface $entityManager): Response
     {
+        $currentUser = $this->security->getUser();
+        // Vérifier si l'utilisateur est bien connecté
+        if (!$currentUser) {
+            $this->addFlash('error',  "Vous devez être connecté pour accéder à cette page");
+            return $this->redirectToRoute('app_login');
+        }
+
         if ($this->isCsrfTokenValid('delete' . $oTV->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($oTV);
             $entityManager->flush();
