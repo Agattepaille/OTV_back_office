@@ -24,53 +24,63 @@ class OTVLimitVerifier
 
     public function sendMailIfOverLimit(OTV $otv)
     {
-        $resident = $otv->getResidents();
-        $residentId = $resident->getId();
+        try {
+            $resident = $otv->getResidents();
+            $address = $otv->getAddress();
 
-        // Check if resident is over the limitation
-        if ($this->isOverLimitation($residentId)) {
-            $this->logger->info('Resident ID ' . $residentId . ' is over the OTV limit');
+            if (!$resident || !$address) {
+                $this->logger->info('Resident or address does not exist');
+                return;
+            }
 
-            $logoPolice = $this->sendMail->imageToBase64($this->projectDir . '/public/assets/images/Logo_Police_Municipale__France_.webp');
-            $from = new Address('noreply@marcq-en-baroeul');
-            $toUser = 'police@municipale.fr';
-            $subject = 'Opération Tranquillité Vacances - notification';
-            $template = 'notificationResidentOverLimit';
-            $context = [
-                'lastname' => $resident->getLastname(),
-                'firstname' => $resident->getFirstname(),
-                'mobilePhone' => $otv->getMobilePhone(),
-                'landlinePhone' => $otv->getLandlinePhone(),
-                'courriel' => $otv->getEmail(),
-                'logoPolice' => $logoPolice,
-                'street' => $otv->getAddress()->getStreet(),
-                'streetNumber' => $otv->getAddress()->getStreetNumber(),
-                'additionalStreetNumber' => $otv->getAddress()->getAdditionnalStreetNumber(),
-                'additionalAddressInfo' => $otv->getAddress()->getAdditionalAddressInfo(),
-                'district' => $otv->getDistrict()->getName(), 
-                'OTVs' => $resident->getOTVs(),
-            ];
+            $residentId = $resident->getId();
+            $addressId = $address->getId();
 
-            $this->sendMail->send(
-                $from,
-                $toUser,
-                $subject,
-                $template,
-                $context
-            );
-            $this->logger->info('Email sent to ' . $toUser);
-        } else {
-            $this->logger->info('Resident ID ' . $residentId . ' is not over the OTV limit');
+            // Check if resident or address is over the limitation
+            if ($this->isOverLimitation($residentId, 'resident') || $this->isOverLimitation($addressId, 'address')) {
+                $this->logger->info('Resident ID ' . $residentId . ' or Address ID ' . $addressId . ' is over the OTV limit');
+
+                $logoPolice = $this->sendMail->imageToBase64($this->projectDir . '/public/assets/images/Logo_Police_Municipale__France_.webp');
+                $from = new Address('noreply@marcq-en-baroeul');
+                $toUser = 'noreply@marcq-en-baroeul.fr';
+                $subject = 'Opération Tranquillité Vacances - notification';
+                $template = 'notificationResidentOverLimit';
+                $context = [
+                    'lastname' => $resident->getLastname(),
+                    'firstname' => $resident->getFirstname(),
+                    'mobilePhone' => $otv->getMobilePhone(),
+                    'landlinePhone' => $otv->getLandlinePhone(),
+                    'courriel' => $otv->getEmail(),
+                    'logoPolice' => $logoPolice,
+                    'street' => $address->getStreet(),
+                    'streetNumber' => $address->getStreetNumber(),
+                    'additionalStreetNumber' => $address->getAdditionnalStreetNumber(),
+                    'additionalAddressInfo' => $address->getAdditionalAddressInfo(),
+                    'district' => $otv->getDistrict()->getName(),
+                    'OTVs' => $resident->getOTVs(),
+                ];
+
+                $this->sendMail->send(
+                    $from,
+                    $toUser,
+                    $subject,
+                    $template,
+                    $context
+                );
+                $this->logger->info('Email sent to ' . $toUser);
+            } else {
+                $this->logger->info('Resident ID ' . $residentId . ' and Address ID ' . $addressId . ' are not over the OTV limit');
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Error while sending email: ' . $e->getMessage());
         }
     }
 
-    private function isOverLimitation($residentId): bool
+    private function isOverLimitation($id, $type): bool
     {
-        $OTVs = $this->oTVRepository->findByResidentId($residentId);
-        $OTVCount = count($OTVs);
-        if ($OTVCount >= 3) {
-            return true;
-        }
-        return false;
+        $criteria = ($type === 'resident') ? ['residents' => $id, 'status' => 'ongoing'] : ['address' => $id, 'status' => 'ongoing'];
+        $OTVs = $this->oTVRepository->findBy($criteria);
+
+        return count($OTVs) >= 3;
     }
 }

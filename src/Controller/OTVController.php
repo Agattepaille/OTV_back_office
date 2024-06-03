@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\OTV;
 use App\Form\OTVType;
 use App\Entity\Address;
+use App\Entity\Districts;
 use App\Entity\Residents;
 use Psr\Log\LoggerInterface;
 use App\Mapper\AddressMapper;
@@ -17,6 +18,7 @@ use App\Repository\AddressRepository;
 use App\Security\ApiKeyAuthenticator;
 use App\Repository\DistrictsRepository;
 use App\Repository\ResidentsRepository;
+use App\Services\OTVStatusUpdater;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,18 +35,24 @@ class OTVController extends AbstractController
     private $uploadsDirectory;
     private $apiKeyAuthenticator;
     private Security $security;
+    private OTVStatusUpdater $otvStatusUpdater;
 
-    public function __construct(Security $security, string $uploadsDirectory, ApiKeyAuthenticator $apiKeyAuthenticator)
-    {
+    public function __construct(
+        Security $security,
+        string $uploadsDirectory,
+        ApiKeyAuthenticator $apiKeyAuthenticator,
+        OTVStatusUpdater $otvStatusUpdater
+    ) {
         $this->uploadsDirectory = $uploadsDirectory;
         $this->apiKeyAuthenticator = $apiKeyAuthenticator;
         $this->security = $security;
+        $this->otvStatusUpdater = $otvStatusUpdater;
     }
 
     #[Route('/', name: 'app_otv_index', methods: ['GET'])]
     public function index(OTVRepository $oTVRepository, DistrictsRepository $districtsRepository): Response
     {
-       
+
         $currentUser = $this->security->getUser();
         // Vérifier si l'utilisateur est bien connecté
         if (!$currentUser) {
@@ -54,6 +62,11 @@ class OTVController extends AbstractController
 
         $OTVs = $oTVRepository->findAll();
         $districts = $districtsRepository->findAll();
+
+        // Mettre à jour le statut de tous les OTVs à l'affichage de l'index
+        foreach ($OTVs as $otv) {
+            $this->otvStatusUpdater->updateStatus($otv);
+        }
 
         return $this->render('otv/index.html.twig', [
             'OTVs' => $OTVs,
@@ -119,11 +132,9 @@ class OTVController extends AbstractController
             'firstname' => $data['firstname'],
             'lastname' => $data['lastname'],
         ]);
-
         if ($existingResident) {
             // Le résident existe déjà, utilisez-le pour la suite du traitement
             $resident = $existingResident;
-            // $resident = $OTVRequestMapper->mapToUpdatedEntity($formData, $data);
         } else {
             // Le résident n'existe pas, créez une nouvelle entité
             $resident = new Residents();
@@ -133,17 +144,14 @@ class OTVController extends AbstractController
 
         // Vérifier si l'adresse existe déjà
         $existingAddress = $addressRepository->findOneBy([
-            'street' => $data['street'] ?? null,
-            'streetNumber' => $data['streetNumber'] ?? null,
+            'street' => $data['street'],
+            'streetNumber' => $data['streetNumber'],
             'additionnalStreetNumber' => $data['additionalStreetNumber'] ?? null,
             'additionalAddressInfo' => $data['additionalAddressInfo'] ?? null,
-
         ]);
-
         if ($existingAddress) {
             // L'adresse existe déjà, utilisez-le pour la suite du traitement
-            $address = $existingResident;
-            // $address = $OTVRequestMapper->mapToUpdatedEntity($address, $data);
+            $address = $existingAddress;
         } else {
             // Le résident n'existe pas, créez une nouvelle entité
             $address = new Address();
@@ -151,14 +159,23 @@ class OTVController extends AbstractController
             $logger->info('New address created: ' . json_encode($address));
         }
 
+        // Vérifier si le quartier existe déjà
+        $existingDistrict = $districtsRepository->findOneBy([
+            'name' => $data['district'],
+        ]);
+        if ($existingDistrict) {
+            $district = $existingDistrict;
+        } else {
+            $district = new Districts();
+            $district = $district->setName($data['district']);
+            $logger->info('New district created: ' . json_encode($address));
+        }
+
         // Créer l'entité OTV
         $OTV = new OTV();
         $OTV = $OTVRequestMapper->mapToEntity($OTV, $data);
         $OTV->setResidents($resident);
         $OTV->setAddress($address);
-        // Get the district id for the selected district
-        $district = $districtsRepository->findOneByName($data['district']);
-        // Set the district on the resident
         $OTV->setDistrict($district);
         $logger->info('New OTV created: ' . json_encode($OTV));
 
@@ -188,7 +205,7 @@ class OTVController extends AbstractController
         $entityManager->persist($address);
         $entityManager->persist($OTV);
         $logger->info('Entities persisted');
-   
+
         // Flush les entités
         try {
             $entityManager->flush();
@@ -206,7 +223,7 @@ class OTVController extends AbstractController
     #[Route('/{id}', name: 'app_otv_show', methods: ['GET'])]
     public function show(OTV $otv, OTVRepository $OTVRepository): Response
     {
-        
+
         $currentUser = $this->security->getUser();
         // Vérifier si l'utilisateur est bien connecté
         if (!$currentUser) {
@@ -214,18 +231,15 @@ class OTVController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        $renamedData = $OTVRepository->getRenamedData($otv);
-
         return $this->render('otv/show.html.twig', [
             'otv' => $otv,
-            'data' => $renamedData,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_otv_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_otv_edit', methods: ['POST'])]
     public function edit(Request $request, OTV $oTV, EntityManagerInterface $entityManager): Response
     {
-        
+
         $currentUser = $this->security->getUser();
         // Vérifier si l'utilisateur est bien connecté
         if (!$currentUser) {
@@ -233,7 +247,22 @@ class OTVController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $form = $this->createForm(OTVType::class, $oTV);
+        $field = $request->request->get('field');
+        $value = $request->request->get('value');
+
+        // Update the field
+        $setter = 'set' . ucfirst($field);
+        if (method_exists($oTV, $setter)) {
+            $oTV->$setter($value);
+            $entityManager->flush();
+
+            return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+        }
+
+        return new JsonResponse(['error' => 'Invalid field'], Response::HTTP_BAD_REQUEST);
+
+        /* 
+        // $form = $this->createForm(OTVType::class, $oTV);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -245,7 +274,7 @@ class OTVController extends AbstractController
         return $this->render('otv/edit.html.twig', [
             'otv' => $oTV,
             'form' => $form,
-        ]);
+        ]); */
     }
 
     #[Route('/{id}', name: 'app_otv_delete', methods: ['POST'])]

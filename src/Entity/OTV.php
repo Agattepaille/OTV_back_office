@@ -36,7 +36,7 @@ class OTV
     #[ORM\Column(nullable: true)]
     private ?array $data = null;
 
-    #[ORM\ManyToOne(inversedBy: 'oTVs')]
+    #[ORM\ManyToOne(inversedBy: 'oTVs', cascade: ["persist"])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Residents $residents = null;
 
@@ -52,11 +52,11 @@ class OTV
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
-    #[ORM\ManyToOne(inversedBy: 'otv')]
+    #[ORM\ManyToOne(inversedBy: 'otv', cascade: ["persist"])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Address $address = null;
 
-    #[ORM\ManyToOne(inversedBy: 'OTVs')]
+    #[ORM\ManyToOne(inversedBy: 'OTVs', cascade: ["persist"])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Districts $district = null;
 
@@ -65,23 +65,13 @@ class OTV
     public function onPrePersist(): void
     {
         if ($this->status === null) {
-            $this->status = "ongoing";
+            $this->status = "pending";
         }
 
         if ($this->created_At === null) {
             $this->created_At = new \DateTimeImmutable("now");
         }
     }
-
-        // Ajouter les valeurs par défaut d'une OTV à la création
-        #[ORM\PreUpdate]
-        public function onPreUpdate(): void
-        {
-            $now = new \DateTimeImmutable("now");
-            if ($now > $this->end_Date) {
-                $this->status = "completed";
-            }
-        }
 
     public function getId(): ?int
     {
@@ -124,7 +114,7 @@ class OTV
         return $this;
     }
 
-    
+
     public function getMobilePhone(): ?string
     {
         return $this->mobilePhone;
@@ -256,5 +246,4 @@ class OTV
 
         return $this;
     }
-
 }

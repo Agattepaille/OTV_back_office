@@ -16,54 +16,6 @@ class OTVRepository extends ServiceEntityRepository
         parent::__construct($registry, OTV::class);
     }
 
-    // renomme les clés du tableau JSON pour les afficher dans le tableau
-    public function renameJsonKeys(array $data, array $keyMapping): array
-    {
-        $renamedData = [];
-        foreach ($data as $key => $value) {
-            $newKey = $keyMapping[$key] ?? $key;
-            if (is_array($value)) {
-                $renamedData[$newKey] = $this->renameJsonKeys($value, $keyMapping);
-            } else {
-                $renamedData[$newKey] = $value;
-            }
-        }
-        return $renamedData;
-    }
-
-    public function getRenamedData(OTV $otv): array
-    {
-        $data = $otv->getData();
-
-        // Mapping des clés à renommer
-        $keyMapping = [
-            'authorizedPersons' => 'Personnes autorisées',
-            'car' => 'Voiture',
-            'emergencyContact1' => 'Personne1',
-            'emergencyContact2' => 'Personne2',
-            'emergencyContact3' => 'Personne3',
-            'civility' => 'Civilité',
-            'lastname' => 'Nom',
-            'firstname' => 'Prénom',
-            'mobilePhone' => 'Téléphone portable',
-            'landlinePhone' => 'Téléphone fixe',
-            'email' => 'Courriel',
-            'authorization' => 'Autorisation',
-            'houseType' => 'Type de logement',
-            'hasAlarm' => 'Alarme',
-            'hasAlarmExt' => 'Alarme extérieure',
-            'hasAnimal' => 'Animal',
-            'hasCamera' => 'Caméra',
-            'blindsSchedule' => 'Horaire des volets',
-            'lightsSchedule' => 'Horaire des éclairages',
-            'additionalInfo' => 'Informations supplémentaires',
-            'otvInfo' => 'Informations supplémentaires',
-
-        ];
-
-        return $this->renameJsonKeys($data, $keyMapping);
-    }
-
     /**
      * @return OTV[] Returns an array of OTV objects
      */
