@@ -82,7 +82,7 @@ class OTVController extends AbstractController
         $OTVsByDistrict = [];
 
         foreach ($districts as $district) {
-            $OTVs = $oTVRepository->findByStatusAndDistrict(true, $district->getName());
+            $OTVs = $oTVRepository->findBy(['status' => 'ongoing', 'district' => $district]);
             if (!empty($OTVs)) {
                 $OTVsByDistrict[$district->getName()] = $OTVs;
             }

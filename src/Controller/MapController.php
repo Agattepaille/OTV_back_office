@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\DistrictsRepository;
 use App\Repository\OTVRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +19,7 @@ class MapController extends AbstractController
     }
 
     #[Route('/map', name: 'app_map')]
-    public function index(OTVRepository $oTVRepository): Response
+    public function index(OTVRepository $oTVRepository, DistrictsRepository $districtsRepository): Response
     {
         $currentUser = $this->security->getUser();
         // Vérifier si l'utilisateur est bien connecté
@@ -28,6 +29,7 @@ class MapController extends AbstractController
         }
         
         $OTVs = $oTVRepository->findAll();
+        $districts = $districtsRepository->findAll();
         
         // Extract latitude and longitude from the data array
         $mappedOTVs = array_map(function ($otv) {
@@ -47,6 +49,7 @@ class MapController extends AbstractController
 
         return $this->render('map/index.html.twig', [
             'OTVs' => $mappedOTVs,
+            'districts' => $districts,
         ]);
     }
 }

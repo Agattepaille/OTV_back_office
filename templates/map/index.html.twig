@@ -17,60 +17,120 @@
 	{{ include('_partials/_navbar.html.twig') }}
 
 	<!-- Main content -->
-	<div class="content">
+	<div
+		class="content">
 		<!-- Card container -->
-		<div class="card card-container">
-			<div
-				class="card-body">
-					<h1>Carte des OTV</h1>
-			
-				<!-- Contenu principal -->
-				<div id="map" style="height: 550px;">
+		<div class="card card-container ">
+			<div class="card-body mapCard">
+				<h1>Carte des OTV</h1>
+
+				<!-- Filtres -->
+				<div class="filter-container">
+					<div class=" row">
+						<div class="col-md-6">
+							<div class="mb-3">
+								<label for="districtFilter">Filtrer par quartier</label>
+								<select id="districtFilter" class="form-select">
+									<option selected>Tous les quartiers</option>
+									{% for district in districts %}
+										<option>{{ district.name }}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="mb-3">
+								<label for="statusFilter" class="form-label">Filtrer par statut</label>
+								<select id="statusFilter" class="form-select form-select-sm">
+									<option value="">Toutes les OTV</option>
+									<option value="pending">En attente</option>
+									<option value="ongoing">En cours</option>
+									<option value="completed">Terminées</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="mb-3">
+								<label for="startDateFilter" class="form-label">Date de début</label>
+								<input type="date" id="startDateFilter" class="form-control">
+							</div>
+							<div class="mb-3">
+								<label for="endDateFilter" class="form-label">Date de fin</label>
+								<input type="date" id="endDateFilter" class="form-control">
+							</div>
+						</div>
+					</div>
+				</div>
+
+					<!-- Contenu principal -->
+					<div id="map"></div>
 				</div>
 			</div>
 		</div>
-	</div>
-	{% block javascripts %}
-		<script>
+		{% block javascripts %}
+			<script>
 			document.addEventListener("DOMContentLoaded", function () {
-var OTVs = {{ OTVs|json_encode|raw }};
+    var OTVs = {{ OTVs|json_encode|raw }};
+    var map = L.map('map').setView([50.670368, 3.096267], 14);
+    var markers = [];
 
-var map = L.map('map').setView([
-50.670368, 3.096267
-], 14);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+   // Fonction pour mettre à jour les marqueurs en fonction des filtres
+function updateMarkers() {
+    // Supprimer les marqueurs existants de la carte
+    markers.forEach(function(marker) {
+        map.removeLayer(marker);
+    });
 
-OTVs.forEach(function (otv) {
-if (otv.latitude && otv.longitude) {
-var popupContent = `
-                            <strong>${
-otv.lastname
-} ${
-otv.firstname
-}</strong><br>
-                            ${
-otv.streetNumber
-} ${
-otv.additionnalStreetNumber
-} ${
-otv.street
-} ${
-otv.additionalAddressInfo
-}<br>
-                            ${
-otv.district
-}<br>
-                            OTV #: ${
-otv.id
-}<br>
-                        `;
-L.marker([otv.latitude, otv.longitude]).addTo(map).bindPopup(popupContent);
+   // Filtrer les OTV en fonction des critères sélectionnés dans les filtres
+    var filteredOTVs;
+    var districtFilter = document.getElementById('districtFilter').value;
+    var statusFilter = document.getElementById('statusFilter').value;
+
+    // Filtre par quartier
+    if (districtFilter !== 'Tous les quartiers') {
+        filteredOTVs = OTVs.filter(function(otv) {
+            return otv.district === districtFilter;
+        });
+    } else {
+        filteredOTVs = OTVs;
+    }
+
+    // Filtre par statut
+    if (statusFilter !== '') {
+	console.log('statut filter ' + statusFilter);
+        filteredOTVs = filteredOTVs.filter(function(otv) {
+            return otv.status === statusFilter;
+			console.log(otv.status);
+        });
+    }
+
+
+    // Ajouter les nouveaux marqueurs filtrés à la carte
+    filteredOTVs.forEach(function (otv) {
+        if (otv.latitude && otv.longitude) {
+            var popupContent = `
+                <strong>${otv.lastname} ${otv.firstname}</strong><br>
+                ${otv.streetNumber} ${otv.additionnalStreetNumber} ${otv.street} ${otv.additionalAddressInfo}<br>
+                ${otv.district}<br>
+                OTV #: ${otv.id}<br>
+            `;
+            var marker = L.marker([otv.latitude, otv.longitude]).addTo(map).bindPopup(popupContent);
+            markers.push(marker);
+        }
+    });
 }
-});
 
 
+    // Écouter les événements de changement dans les filtres et mettre à jour les marqueurs
+    document.getElementById('districtFilter').addEventListener('change', updateMarkers);
+    document.getElementById('statusFilter').addEventListener('change', updateMarkers);
+
+    // Appel initial pour afficher les marqueurs avec les filtres par défaut
+    updateMarkers();
 });
-		</script>
+
+			</script>
+		{% endblock %}
 	{% endblock %}
-{% endblock %}
