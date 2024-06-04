@@ -1,0 +1,155 @@
+:root {
+  --caribbean: #086972;
+  --moonstone: #01a9b4;
+  --tiffanyblue: #87dfd6;
+  --gamboge: #f39c11;
+  --maize: #ffe853;
+}
+
+body,
+html {
+  font-family: "Open Sans", "Roboto";
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+h1 {
+  font-size: 1.5em;
+  color: #333;
+}
+
+.navbar {
+  /* box-shadow: 0px 0px 5px 3px rgba(178, 178, 178, 0.2) !important; */
+  z-index: 1;
+  width: 100%;
+  background-color: #374f6b !important;
+}
+
+.navbar-brand {
+  color: #ffffff !important;
+}
+
+.shadowBox {
+  box-shadow: 0px 0px 5px 3px rgba(178, 178, 178, 0.2) !important;
+}
+
+.card:hover {
+  box-shadow: 0px 0px 5px 3px rgba(178, 178, 178, 0.3) !important;
+}
+
+/* Custom styles for the sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 250px;
+  background-color: #374f6b;
+  padding-top: 100px;
+  overflow-y: auto;
+}
+
+.content {
+  margin-left: 250px; /* Adjust margin to leave space for the sidebar */
+  margin-top: 56px; /* Adjust to leave space for the fixed navbar */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  min-height: 100vh !important; /* Ensure it takes the full viewport height */
+}
+
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-top: 20px;
+}
+
+#otvTable {
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+.card {
+  margin-top: 20px;
+}
+
+/* Custom styles for navigation links */
+.nav-link {
+  color: #ffffff !important;
+}
+
+.active {
+  background-color: #324760 !important;
+  color: #ffffff !important;
+}
+
+.nav-link:hover {
+  background-color: #5479a2;
+  color: #ffffff !important;
+}
+
+.policeLogo {
+  height: 120px;
+}
+
+/* icones */
+a .fa-eye {
+  color: #374f6b;
+  font-weight: 900;
+  font-size: 1.5em;
+}
+
+a .fa-eye:hover {
+  color: #5479a2;
+}
+
+/* map */
+
+.mapCard {
+  width: 800px;
+}
+
+#map {
+  width: 100%;
+  height: 400px;
+  z-index: 0;
+}
+
+/* media queries */
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+}
+
+@media (min-width: 576px) {
+  #map {
+    height: 500px;
+  }
+}
+
+@media (min-width: 768px) {
+  #map {
+    height: 600px;
+  }
+}
+
+@media (min-width: 992px) {
+  #map {
+    height: 700px;
+  }
+}
+
+@media (min-width: 1200px) {
+  #map {
+    height: 800px;
+  }
+}

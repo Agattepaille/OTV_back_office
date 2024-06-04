@@ -1,0 +1,94 @@
+ 
+
+
+.showWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; 
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+
+/* style for the detail of the otv */
+.otvCard {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+}
+
+.otvCard:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+}
+.otvTitle {
+    font-size: 22px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.lign {
+    margin-bottom: 5px;
+}
+.label {
+    font-weight: bold;
+    margin-right: 10px;
+    display: inline-block;
+    width: 200px;
+    vertical-align: top;
+    font-size: 16px;
+}
+.lign p {
+    display: inline-block;
+    margin: 0;
+    vertical-align: top;
+    font-size: 14px;
+}
+
+input.editable {
+    display: inline-block;
+    margin: 0;
+    vertical-align: top;
+    font-size: 14px;
+    border: none;
+}
+
+input.editable:focus {
+    border: 1px solid #b6b3b3; 
+    outline: none;
+    border-radius: 3px;
+}
+
+
+.links {
+    margin-top: 20px;
+    text-align: center;
+}
+.data-section {
+    margin-bottom: 20px;
+}
+.data-section h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+.data-section p {
+    margin-left: 20px;
+}
+.data-section .subdata {
+    margin-left: 20px;
+}
+.redirect {
+    text-decoration: none;
+    color: #007bff;
+}
+.redirect:hover {
+    text-decoration: underline;
+}
+.fa-arrow-left {
+    margin-right: 5px;
+}
