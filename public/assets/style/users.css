@@ -1,0 +1,77 @@
+/* Général */
+:root {
+  --caribbean: #086972;
+  --moonstone: #01a9b4;
+  --tiffanyblue: #87dfd6;
+  --gamboge: #f39c11;
+  --maize: #ffe853;
+}
+
+/* Style de la table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+/* Style du compte utilisateur */
+.label {
+  background-color: var(--maize);
+  height: 20px;
+  width: auto;
+  padding: 5px 8px;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: start;
+}
+
+.lign {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  justify-content: center;
+  align-items: end;
+}
+
+input {
+  font-size: 0.8em;
+  display: flex;
+  justify-content: center;
+  margin: 5px;
+  padding: 8px 5px;
+  position: relative;
+  outline-style: none !important ;
+  outline-color: auto !important ;
+}
+
+.userBtn {
+  color: #374f6b;
+  border-color: #374f6b !important;
+}
+
+.userBtn:hover {
+  background-color: #374f6b;
+  border-color: #374f6b !important;
+}
+
+a, i {
+  color: #374f6b;
+}
+
+.small-card {
+  width: 100%;
+  max-width: 500px !important;
+}
