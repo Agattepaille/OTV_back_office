@@ -1,4 +1,67 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_row(form.startDate, {'attr': {'class': 'form-control', 'id': 'start_Date'}}) }}
+{{ form_row(form.endDate, {'attr': {'class': 'form-control', 'id': 'end_Date'}}) }}
+{{ form_row(form.createdAt, {'attr': {'class': 'form-control', 'id': 'end_Date'}}) }}
+<div class="data-section">
+	<h3>Demandeur</h3>
+	{{ form_row(form.civility, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.otherCivility, {'attr': {'class': 'form-control mt-2', 'id': 'otherCivility', 'style': 'display: none;', 'placeholder': 'Ajouter une civilité'}}) }}
+	{{ form_row(form.lastname, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.firstname, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.district, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.street, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.streetNumber, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.additionalStreetNumber, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.additionalAddressInfo, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.mobilePhone, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.landlinePhone, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.email, {'attr': {'class': 'form-control'}}) }}
+</div>
+<div class="data-section">
+	<h3>Informations</h3>
+	{{ form_row(form.houseType, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.hasAlarm, {'attr': {'class': 'form-check form-check-inline'}}) }}
+	{{ form_row(form.hasAlarmExt, {'attr': {'class': 'form-check form-check-inline'}}) }}
+	{{ form_row(form.hasCamera, {'attr': {'class': 'form-check form-check-inline'}}) }}
+	{{ form_row(form.hasAnimal, {'attr': {'class': 'form-check form-check-inline'}}) }}
+	{{ form_row(form.blindsSchedule, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.lightsSchedule, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.car, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.additionalInfo, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.authorizedPersons, {'attr': {'class': 'form-control'}}) }}
+</div>
+
+<div class="data-section">
+	<h3>Personnes à prévenir</h3>
+    <h4>Personne 1</h4>
+	{{ form_row(form.emergencyCivility1, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.emergencyLastname1, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.emergencyFirstname1, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.emergencyMobilePhone1, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.emergencyLandlinePhone1, {'attr': {'class': 'form-control'}}) }}
+	{{ form_row(form.emergencyEmail1, {'attr': {'class': 'form-control'}}) }}
+<h4>Personne 2</h4>
+{{ form_row(form.emergencyCivility2, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyLastname2, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyFirstname2, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyMobilePhone2, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyLandlinePhone2, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyEmail2, {'attr': {'class': 'form-control'}}) }}
+<h4>Personne 3</h4>
+{{ form_row(form.emergencyCivility3, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyLastname3, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyFirstname3, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyMobilePhone3, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyLandlinePhone3, {'attr': {'class': 'form-control'}}) }}
+{{ form_row(form.emergencyEmail3, {'attr': {'class': 'form-control'}}) }}
+</div>
+<div class="data-section">
+	<h3>Commentaires</h3>
+{{ form_row(form.comments, {'attr': {'class': 'form-control'}}) }}
+</div>
+{{ form_row(form.latitude) }}
+{{ form_row(form.longitude) }}
+
+<button class="btn">{{ button_label|default('Save') }}</button>
+
 {{ form_end(form) }}

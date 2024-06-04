@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\OTV;
 use App\Form\OtvType;
+use App\DTO\OtvRequest;
 use App\Entity\Address;
 use App\Entity\Districts;
 use App\Entity\Residents;
@@ -14,11 +15,11 @@ use App\Services\PdfGenerator;
 use App\Mapper\ResidentsMapper;
 use App\Mapper\OTVRequestMapper;
 use App\Repository\OTVRepository;
+use App\Services\OTVStatusUpdater;
 use App\Repository\AddressRepository;
 use App\Security\ApiKeyAuthenticator;
 use App\Repository\DistrictsRepository;
 use App\Repository\ResidentsRepository;
-use App\Services\OTVStatusUpdater;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -237,7 +238,7 @@ class OTVController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_otv_edit', methods: ['POST', 'GET'])]
-    public function edit(Request $request, OTV $oTV, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, OTV $OTV, OtvRequest $OtvRequest, EntityManagerInterface $entityManager): Response
     {
 
         $currentUser = $this->security->getUser();
@@ -246,19 +247,48 @@ class OTVController extends AbstractController
             $this->addFlash('error',  "Vous devez être connecté pour accéder à cette page");
             return $this->redirectToRoute('app_login');
         }
-        
-        $form = $this->createForm(OtvType::class, $oTV);
+
+        // Créer un objet OtvRequest à partir des données de l'objet OTV
+        $OtvRequest = new OtvRequest();
+        $OtvRequest->setLastname($OTV->getResidents()->getLastname());
+        $OtvRequest->setFirstname($OTV->getResidents()->getFirstname());
+        $OtvRequest->setStreet($OTV->getAddress()->getStreet());
+        $OtvRequest->setStreetNumber($OTV->getAddress()->getStreetNumber());
+        $OtvRequest->setAdditionalStreetNumber($OTV->getAddress()->getAdditionnalStreetNumber());
+        $OtvRequest->setAdditionalAddressInfo($OTV->getAddress()->getAdditionalAddressInfo());
+        $OtvRequest->setDistrict($OTV->getDistrict()->getName());
+        $OtvRequest->setStartDate($OTV->getStartDate());
+        $OtvRequest->setEndDate($OTV->getEndDate());
+        $OtvRequest->setCreatedAt($OTV->getCreatedAt());
+        $OtvRequest->setEmail($OTV->getEmail());
+        $OtvRequest->setMobilePhone($OTV->getMobilePhone());
+        $OtvRequest->setLandlinePhone($OTV->getLandlinePhone());
+        $OtvRequest->setComments($OTV->getComments());
+        $data = $OTV->getData();
+        $houseType = $data['otvInfo']['houseType'];
+        $OtvRequest->setHouseType($houseType);
+
+
+
+
+
+        $form = $this->createForm(OtvType::class, $OtvRequest);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $OtvRequest = $form->getData();
+
+            $OTV->getResidents()->setLastname(($OtvRequest->getLastname()));
+
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_otv_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('otv/edit.html.twig', [
-            'otv' => $oTV,
-            // 'form' => $form,
+            'otv' => $OTV,
+            'form' => $form,
         ]);
     }
 
