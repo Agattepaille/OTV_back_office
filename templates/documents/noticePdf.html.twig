@@ -67,18 +67,21 @@
 	</head>
 	<body>
 		{% set currentDistrict = null %}
-		{% set count = 0 %}
+		{% set currentHeight = 0 %}
 		<!-- Compteur pour suivre le nombre d'avis -->
 		{% for district, OTVs in OTVsByDistrict %}
 			{% if OTVs|length > 0 %}
 				{% if currentDistrict is not null and currentDistrict != district %}
-					<div class="pagebreak"></div>
+					<!-- Insérez un saut de page seulement si l'espace restant sur la page actuelle est insuffisant -->
+					{% if currentHeight + OTVs|length * 300 > 1000 %}
+						<div class="pagebreak"></div>
+						{% set currentHeight = 0 %}
+					{% endif %}
 				{% endif %}
 				{% set currentDistrict = district %}
 				{% for otv in OTVs %}
-					{% if count > 0 and count % 4 == 0 %}
-						<div class="pagebreak"></div>
-					{% endif %}
+					<!-- Mettez à jour la hauteur actuelle -->
+					{% set currentHeight = currentHeight + 300 %}
 					<div class="notice">
 						<table class="container">
 							<tr>
@@ -89,13 +92,23 @@
 								<td class="notice-body">
 									<h2>Avis de passage</h2>
 									<p>
-										Nom prénom :
+										Nom :
 										<strong>{{ otv.residents.lastname }}
 											{{ otv.residents.firstname }}</strong>
 									</p>
 									<p>
 										Adresse :
-										<strong>{{ otv.residents.street }}</strong>
+										<strong>{{ otv.address.street }}
+											{% if otv.address.streetNumber %}
+												{{ otv.address.streetNumber }}
+											{% endif %}
+											{% if otv.address.additionnalStreetNumber %}
+												{{ otv.address.additionnalStreetNumber }}
+											{% endif %}
+											{% if otv.address.additionalAddressInfo %}
+												{{ otv.address.additionalAddressInfo }}
+											{% endif %}
+										</strong>
 									</p>
 									<p>
 										Quartier :
@@ -127,7 +140,6 @@
 							</tr>
 						</table>
 					</div>
-					{% set count = count + 1 %}
 				{% endfor %}
 			{% endif %}
 		{% endfor %}

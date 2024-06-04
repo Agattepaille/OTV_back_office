@@ -48,13 +48,13 @@ class DistrictsRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-       public function findOneByName($value): ?Districts
-       {
-           return $this->createQueryBuilder('d')
-               ->andWhere('d.name = :val')
-               ->setParameter('val', $value)
-               ->getQuery()
-               ->getOneOrNullResult()
-           ;
-       }
+    //    public function findOneByName($value): ?Districts
+    //    {
+    //        return $this->createQueryBuilder('d')
+    //            ->andWhere('d.name = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

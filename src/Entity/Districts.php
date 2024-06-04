@@ -54,35 +54,35 @@ class Districts
         return $this;
     }
 
-    /**
-     * @return Collection<int, Residents>
-     */
-    public function getResidents(): Collection
-    {
-        return $this->residents;
-    }
+//  /*    /**
+//      * @return Collection<int, Residents>
+//      */
+//     public function getResidents(): Collection
+//     {
+//         return $this->residents;
+//     }
 
-    public function addResident(Residents $resident): static
-    {
-        if (!$this->residents->contains($resident)) {
-            $this->residents->add($resident);
-            $resident->setDistricts($this);
-        }
+//     public function addResident(Residents $resident): static
+//     {
+//         if (!$this->residents->contains($resident)) {
+//             $this->residents->add($resident);
+//             $resident->setDistricts($this);
+//         }
 
-        return $this;
-    }
+//         return $this;
+//     }
 
-    public function removeResident(Residents $resident): static
-    {
-        if ($this->residents->removeElement($resident)) {
-            // set the owning side to null (unless already changed)
-            if ($resident->getDistricts() === $this) {
-                $resident->setDistricts(null);
-            }
-        }
+//     public function removeResident(Residents $resident): static
+//     {
+//         if ($this->residents->removeElement($resident)) {
+//             // set the owning side to null (unless already changed)
+//             if ($resident->getDistricts() === $this) {
+//                 $resident->setDistricts(null);
+//             }
+//         }
 
-        return $this;
-    }
+//         return $this;
+//     } */
 
     /**
      * @return Collection<int, OTV>
