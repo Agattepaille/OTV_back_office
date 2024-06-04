@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\OTV;
-use App\Form\OTVType;
+use App\Form\OtvType;
 use App\Entity\Address;
 use App\Entity\Districts;
 use App\Entity\Residents;
@@ -236,7 +236,7 @@ class OTVController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_otv_edit', methods: ['POST'])]
+    #[Route('/{id}/edit', name: 'app_otv_edit', methods: ['POST', 'GET'])]
     public function edit(Request $request, OTV $oTV, EntityManagerInterface $entityManager): Response
     {
 
@@ -246,23 +246,8 @@ class OTVController extends AbstractController
             $this->addFlash('error',  "Vous devez être connecté pour accéder à cette page");
             return $this->redirectToRoute('app_login');
         }
-
-        $field = $request->request->get('field');
-        $value = $request->request->get('value');
-
-        // Update the field
-        $setter = 'set' . ucfirst($field);
-        if (method_exists($oTV, $setter)) {
-            $oTV->$setter($value);
-            $entityManager->flush();
-
-            return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
-        }
-
-        return new JsonResponse(['error' => 'Invalid field'], Response::HTTP_BAD_REQUEST);
-
-        /* 
-        // $form = $this->createForm(OTVType::class, $oTV);
+        
+        $form = $this->createForm(OtvType::class, $oTV);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -273,8 +258,8 @@ class OTVController extends AbstractController
 
         return $this->render('otv/edit.html.twig', [
             'otv' => $oTV,
-            'form' => $form,
-        ]); */
+            // 'form' => $form,
+        ]);
     }
 
     #[Route('/{id}', name: 'app_otv_delete', methods: ['POST'])]

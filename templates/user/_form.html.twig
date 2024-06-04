@@ -39,7 +39,7 @@
 	<div class="col-auto">
 		<button class="userBtn btn btn-outline-primary">{{ button_label|default('Save') }}</button>
 	</div>
-	{% if not is_granted('ROLE_ADMIN') %}
+	{% if user.roles[0] != 'ROLE_ADMIN' and is_granted('ROLE_USER') %}
 		<div class="col-auto">
 			{{ include('user/_delete_form.html.twig') }}
 		</div>

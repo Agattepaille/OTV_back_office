@@ -35,6 +35,16 @@
 			'placeholder': 'Mot de passe',
 		}})	}}
 </div>
+<div class="row d-flex justify-content-end align-items-center mt-4">
+	<div class="col-auto">
+		<button class="userBtn btn btn-outline-primary">{{ button_label|default('Save') }}</button>
+	</div>
+	{% if user.roles[0] != 'ROLE_ADMIN' and is_granted('ROLE_USER') %}
+		<div class="col-auto">
+			{{ include('user/_delete_form.html.twig') }}
+		</div>
+	{% endif %}
+</div>
 
-<button class="btn">{{ button_label|default('Save') }}</button>
+{# <button class="btn">{{ button_label|default('Save') }}</button> #}
 {{ form_end(form) }}
