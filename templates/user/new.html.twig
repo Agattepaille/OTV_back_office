@@ -3,22 +3,28 @@
 	<link rel="stylesheet" href="{{ asset('assets/style/users.css') }}">
 {% endblock %}
 
-{% block title %}New User
+{% block title %}Nouvel utilisateur
 {% endblock %}
 
 {% block body %}
+	<!-- Sidebar -->
+	{{ include('_partials/_sidebar.html.twig') }}
+	<!-- Navbar -->
+	{{ include('_partials/_navbar.html.twig') }}
+
+	<!-- Main content -->
 	<div
-		class="pageWrapper">
-		<!-- Sidebar -->
-		{{ include('_partials/_sidebar.html.twig') }}
-		<div class="mainContent">
+		class="content">
+		<!-- Card container -->
+		<div class="card card-container small-card">
+			<div class="card-body">
 
-			<h1>Create new User</h1>
-            <div class=" cardContainer shadowBox card">
+				<h1>Ajouter un utilisateur</h1>
 
-                {{ include('user/_form.html.twig', {'button_label': 'Enregistrer'}) }}
-                <a href="{{ path('app_user_index') }}">Retour à la liste utilisateurs</a>
-            </div>
+				{{ include('user/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+				<a href="{{ path('app_user_index') }}">
+					<i class="fa-solid fa-arrow-left mr-2"></i>Retour à la liste des utilisateurs</a>
+			</div>
 		</div>
 	</div>
 {% endblock %}

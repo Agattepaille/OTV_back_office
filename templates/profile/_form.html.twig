@@ -26,18 +26,13 @@
 			'placeholder': 'Courriel',
 		}})	}}
 </div>
-<div class="lign">
-	<p class="label">Mot de passe</p>
-	{{ form_row(form.password, {
-		'label': false,
-		'attr': {
-			'id': 'password',
-			'placeholder': 'Mot de passe',
-		}})	}}
-</div>
 <div class="row d-flex justify-content-end align-items-center mt-4">
 	<div class="col-auto">
 		<button class="userBtn btn btn-outline-primary">{{ button_label|default('Save') }}</button>
+	</div>
+	<div class="col-auto">
+
+		<a class="button" href="{{ path('app_profile_editPassword', {'id': user.id}) }}">{{ 'password'|trans({}, 'profil') }}</a>
 	</div>
 	{% if user.roles[0] != 'ROLE_ADMIN' and is_granted('ROLE_USER') %}
 		<div class="col-auto">
@@ -48,3 +43,15 @@
 
 {# <button class="btn">{{ button_label|default('Save') }}</button> #}
 {{ form_end(form) }}
+
+<script>
+	$(".toggle-password").click(function () {
+$(this).toggleClass("fa-eye fa-eye-slash");
+var input = $($(this).attr("toggle"));
+if (input.attr("type") == "password") {
+input.attr("type", "text");
+} else {
+input.attr("type", "password");
+}
+});
+</script>

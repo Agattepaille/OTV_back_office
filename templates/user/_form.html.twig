@@ -26,23 +26,10 @@
 			'placeholder': 'Courriel',
 		}})	}}
 </div>
-<div class="lign">
-	<p class="label">Mot de passe</p>
-	{{ form_row(form.password, {
-		'label': false,
-		'attr': {
-			'id': 'password',
-			'placeholder': 'Mot de passe',
-		}})	}}
-</div>
 <div class="row d-flex justify-content-end align-items-center mt-4">
 	<div class="col-auto">
 		<button class="userBtn btn btn-outline-primary">{{ button_label|default('Save') }}</button>
 	</div>
-	{% if user.roles[0] != 'ROLE_ADMIN' and is_granted('ROLE_USER') %}
-		<div class="col-auto">
-			{{ include('user/_delete_form.html.twig') }}
-		</div>
-	{% endif %}
+	
 </div>
 {{ form_end(form) }}

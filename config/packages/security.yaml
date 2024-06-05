@@ -13,11 +13,6 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        # api:
-        #     pattern: ^/otv/new
-        #     stateless: true
-        #     custom_authenticators: 
-        #         - App\Security\ApiKeyAuthenticator
         api:
             pattern: ^/otv/new
             security: false
