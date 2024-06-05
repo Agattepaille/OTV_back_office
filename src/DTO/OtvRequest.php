@@ -18,10 +18,10 @@ class OtvRequest
     private $landlinePhone;
     private $email;
     private $houseType;
-    private $hasAlarm;
-    private $hasAlarmExt;
-    private $hasCamera;
-    private $hasAnimal;
+    private bool $hasAlarm;
+    private bool $hasAlarmExt;
+    private bool $hasCamera;
+    private bool $hasAnimal;
     private $blindsSchedule;
     private $lightsSchedule;
     private $car;
@@ -317,86 +317,7 @@ class OtvRequest
         return $this;
     }
 
-    /**
-     * Get the value of hasAlarm
-     */ 
-    public function getHasAlarm()
-    {
-        return $this->hasAlarm;
-    }
-
-    /**
-     * Set the value of hasAlarm
-     *
-     * @return  self
-     */ 
-    public function setHasAlarm($hasAlarm)
-    {
-        $this->hasAlarm = $hasAlarm;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of hasAlarmExt
-     */ 
-    public function getHasAlarmExt()
-    {
-        return $this->hasAlarmExt;
-    }
-
-    /**
-     * Set the value of hasAlarmExt
-     *
-     * @return  self
-     */ 
-    public function setHasAlarmExt($hasAlarmExt)
-    {
-        $this->hasAlarmExt = $hasAlarmExt;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of hasCamera
-     */ 
-    public function getHasCamera()
-    {
-        return $this->hasCamera;
-    }
-
-    /**
-     * Set the value of hasCamera
-     *
-     * @return  self
-     */ 
-    public function setHasCamera($hasCamera)
-    {
-        $this->hasCamera = $hasCamera;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of hasAnimal
-     */ 
-    public function getHasAnimal()
-    {
-        return $this->hasAnimal;
-    }
-
-    /**
-     * Set the value of hasAnimal
-     *
-     * @return  self
-     */ 
-    public function setHasAnimal($hasAnimal)
-    {
-        $this->hasAnimal = $hasAnimal;
-
-        return $this;
-    }
-
+  
     /**
      * Get the value of blindsSchedule
      */ 
@@ -976,6 +897,86 @@ class OtvRequest
     public function setComments($comments)
     {
         $this->comments = $comments;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of hasAlarm
+     */ 
+    public function getHasAlarm(): bool
+    {
+        return $this->hasAlarm;
+    }
+
+    /**
+     * Set the value of hasAlarm
+     *
+     * @return  self
+     */ 
+    public function setHasAlarm($hasAlarm)
+    {
+        $this->hasAlarm = $hasAlarm;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of hasAlarmExt
+     */ 
+    public function getHasAlarmExt(): bool
+    {
+        return $this->hasAlarmExt;
+    }
+
+    /**
+     * Set the value of hasAlarmExt
+     *
+     * @return  self
+     */ 
+    public function setHasAlarmExt($hasAlarmExt)
+    {
+        $this->hasAlarmExt = $hasAlarmExt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of hasCamera
+     */ 
+    public function getHasCamera(): bool
+    {
+        return $this->hasCamera;
+    }
+
+    /**
+     * Set the value of hasCamera
+     *
+     * @return  self
+     */ 
+    public function setHasCamera($hasCamera)
+    {
+        $this->hasCamera = $hasCamera;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of hasAnimal
+     */ 
+    public function getHasAnimal(): bool
+    {
+        return $this->hasAnimal;
+    }
+
+    /**
+     * Set the value of hasAnimal
+     *
+     * @return  self
+     */ 
+    public function setHasAnimal($hasAnimal)
+    {
+        $this->hasAnimal = $hasAnimal;
 
         return $this;
     }

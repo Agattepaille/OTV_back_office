@@ -8,8 +8,18 @@
 
 {% for label, messages in app.flashes %}
 	{% for message in messages %}
-		<div class="alert {{ flashTypes[label]|default('alert-info') }}" role="alert">
+		<div class="alert {{ flashTypes[label]|default('alert-info')  }}" role="alert" data-dismiss="alert" aria-label="Close">
 			{{ message }}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
 		</div>
 	{% endfor %}
 {% endfor %}
+
+<script>
+    // close flash messages
+    $('.alert').on('click', function () {
+        $(this).remove();
+    });
+</script>

@@ -95,7 +95,7 @@ class OtvType extends AbstractType
                 ]
             ])
             ->add('comments', TextareaType::class, [
-                'label' => 'Commentaires',
+                'label' => false,
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
             ])
@@ -157,7 +157,6 @@ class OtvType extends AbstractType
             ])
             ->add('houseType', TextType::class, [
                 'label' => 'Type de Logement',
-              
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
             ])
@@ -169,7 +168,7 @@ class OtvType extends AbstractType
                 ],
                 'expanded' => true,
                 'multiple' => false,
-                'required' => false,
+                'required' => true,
                 'attr' => ['class' => 'form-check form-check-inline'],
               /*   'constraints' => [
                     new NotNull(['message' => 'Veuillez sélectionner une option.'])
@@ -183,7 +182,7 @@ class OtvType extends AbstractType
                 ],
                 'expanded' => true,
                 'multiple' => false,
-                'required' => false,
+                'required' => true,
                 'attr' => ['class' => 'form-check form-check-inline'],
                 /* 'constraints' => [
                     new NotNull(['message' => 'Veuillez sélectionner une option.'])
@@ -197,7 +196,7 @@ class OtvType extends AbstractType
                 ],
                 'expanded' => true,
                 'multiple' => false,
-                'required' => false,
+                'required' => true,
                 'attr' => ['class' => 'form-check form-check-inline'],
               /*   'constraints' => [
                     new NotNull(['message' => 'Veuillez sélectionner une option.'])
@@ -211,7 +210,7 @@ class OtvType extends AbstractType
                 ],
                 'expanded' => true,
                 'multiple' => false,
-                'required' => false,
+                'required' => true,
                 'attr' => ['class' => 'form-check form-check-inline'],
                /*  'constraints' => [
                     new NotNull(['message' => 'Veuillez sélectionner une option.'])
@@ -252,12 +251,6 @@ class OtvType extends AbstractType
 
             ->add('endDate', DateType::class, [
                 'label' => 'Date de Fin',
-                'required' => false,
-                'attr' => ['class' => 'form-control', 'id' => 'end_Date'],
-            ])
-
-            ->add('createdAt', DateType::class, [
-                'label' => 'Date de création',
                 'required' => false,
                 'attr' => ['class' => 'form-control', 'id' => 'end_Date'],
             ])
@@ -401,7 +394,7 @@ class OtvType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'csrf_protection' => true,
+            'csrf_protection' => false,
             'data_class' => OtvRequest::class,
         ]);
     }

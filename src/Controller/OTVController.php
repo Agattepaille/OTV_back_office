@@ -8,6 +8,7 @@ use App\DTO\OtvRequest;
 use App\Entity\Address;
 use App\Entity\Districts;
 use App\Entity\Residents;
+use App\Mapper\OtvMapper;
 use Psr\Log\LoggerInterface;
 use App\Mapper\AddressMapper;
 use App\Services\FileUploader;
@@ -37,17 +38,20 @@ class OTVController extends AbstractController
     private $apiKeyAuthenticator;
     private Security $security;
     private OTVStatusUpdater $otvStatusUpdater;
+    private LoggerInterface $logger;
 
     public function __construct(
         Security $security,
         string $uploadsDirectory,
         ApiKeyAuthenticator $apiKeyAuthenticator,
-        OTVStatusUpdater $otvStatusUpdater
+        OTVStatusUpdater $otvStatusUpdater,
+        LoggerInterface $logger
     ) {
         $this->uploadsDirectory = $uploadsDirectory;
         $this->apiKeyAuthenticator = $apiKeyAuthenticator;
         $this->security = $security;
         $this->otvStatusUpdater = $otvStatusUpdater;
+        $this->logger = $logger;
     }
 
     #[Route('/', name: 'app_otv_index', methods: ['GET'])]
@@ -112,21 +116,21 @@ class OTVController extends AbstractController
         AddressRepository $addressRepository,
         ResidentsRepository $residentsRepository,
         FileUploader $fileUploader,
-        LoggerInterface $logger,
+        
         Request $request,
         EntityManagerInterface $entityManager,
         OTVRequestMapper $OTVRequestMapper,
         DistrictsRepository $districtsRepository
     ): Response {
         if (!$this->apiKeyAuthenticator->authenticate($request)) {
-            $logger->info('Unauthorized request');
+            $this->logger->info('Unauthorized request');
             return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
         // Récupérer toutes les données du formulaire
         $formData = $request->request->all();
         $data = $formData['data'];
-        $logger->info('Data received: ' . json_encode($data));
+        $this->logger->info('Data received: ' . json_encode($data));
 
         // Vérifier si le résident existe déjà
         $existingResident = $residentsRepository->findOneBy([
@@ -140,7 +144,7 @@ class OTVController extends AbstractController
             // Le résident n'existe pas, créez une nouvelle entité
             $resident = new Residents();
             $resident = $residentsMapper->mapToEntity($resident, $data);
-            $logger->info('New resident created: ' . json_encode($resident));
+            $this->logger->info('New resident created: ' . json_encode($resident));
         }
 
         // Vérifier si l'adresse existe déjà
@@ -157,7 +161,7 @@ class OTVController extends AbstractController
             // Le résident n'existe pas, créez une nouvelle entité
             $address = new Address();
             $address = $addressMapper->mapToEntity($address, $data);
-            $logger->info('New address created: ' . json_encode($address));
+            $this->logger->info('New address created: ' . json_encode($address));
         }
 
         // Vérifier si le quartier existe déjà
@@ -169,7 +173,7 @@ class OTVController extends AbstractController
         } else {
             $district = new Districts();
             $district = $district->setName($data['district']);
-            $logger->info('New district created: ' . json_encode($address));
+            $this->logger->info('New district created: ' . json_encode($address));
         }
 
         // Créer l'entité OTV
@@ -178,26 +182,26 @@ class OTVController extends AbstractController
         $OTV->setResidents($resident);
         $OTV->setAddress($address);
         $OTV->setDistrict($district);
-        $logger->info('New OTV created: ' . json_encode($OTV));
+        $this->logger->info('New OTV created: ' . json_encode($OTV));
 
         // Gérer le fichier uploadé
         /** @var UploadedFile $file **/
         $file = $request->files->get('file');
         if ($file) {
-            $logger->info('File received: ' . $file->getClientOriginalName());
+            $this->logger->info('File received: ' . $file->getClientOriginalName());
             try {
-                $logger->info('Starting file upload...');
+                $this->logger->info('Starting file upload...');
                 $newFilename = $fileUploader->uploadFile($file, $data['lastname'], $data['firstname']);
-                $logger->info('File upload successful, new filename: ' . $newFilename);
+                $this->logger->info('File upload successful, new filename: ' . $newFilename);
                 $OTV->setFileName($newFilename);
                 $OTV->setPathToFile($this->uploadsDirectory . '/' . $newFilename);
-                $logger->info('File path set on OTV');
+                $this->logger->info('File path set on OTV');
             } catch (\Exception $e) {
-                $logger->error('File upload error: ' . $e->getMessage());
+                $this->logger->error('File upload error: ' . $e->getMessage());
                 return new JsonResponse(['error' => 'File upload failed: ' . $e->getMessage()], 500);
             }
         } else {
-            $logger->info('No file received');
+            $this->logger->info('No file received');
         }
 
         // Persister les entités
@@ -205,14 +209,14 @@ class OTVController extends AbstractController
         $entityManager->persist($resident);
         $entityManager->persist($address);
         $entityManager->persist($OTV);
-        $logger->info('Entities persisted');
+        $this->logger->info('Entities persisted');
 
         // Flush les entités
         try {
             $entityManager->flush();
-            $logger->info('Entities flushed');
+            $this->logger->info('Entities flushed');
         } catch (\Exception $e) {
-            $logger->error($e->getMessage());
+            $this->logger->error($e->getMessage());
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
 
@@ -238,7 +242,7 @@ class OTVController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_otv_edit', methods: ['POST', 'GET'])]
-    public function edit(Request $request, OTV $OTV, OtvRequest $OtvRequest, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, OTV $OTV, OtvMapper $OtvMapper, OtvRequest $OtvRequest, EntityManagerInterface $entityManager): Response
     {
 
         $currentUser = $this->security->getUser();
@@ -250,40 +254,31 @@ class OTVController extends AbstractController
 
         // Créer un objet OtvRequest à partir des données de l'objet OTV
         $OtvRequest = new OtvRequest();
-        $OtvRequest->setLastname($OTV->getResidents()->getLastname());
-        $OtvRequest->setFirstname($OTV->getResidents()->getFirstname());
-        $OtvRequest->setStreet($OTV->getAddress()->getStreet());
-        $OtvRequest->setStreetNumber($OTV->getAddress()->getStreetNumber());
-        $OtvRequest->setAdditionalStreetNumber($OTV->getAddress()->getAdditionnalStreetNumber());
-        $OtvRequest->setAdditionalAddressInfo($OTV->getAddress()->getAdditionalAddressInfo());
-        $OtvRequest->setDistrict($OTV->getDistrict()->getName());
-        $OtvRequest->setStartDate($OTV->getStartDate());
-        $OtvRequest->setEndDate($OTV->getEndDate());
-        $OtvRequest->setCreatedAt($OTV->getCreatedAt());
-        $OtvRequest->setEmail($OTV->getEmail());
-        $OtvRequest->setMobilePhone($OTV->getMobilePhone());
-        $OtvRequest->setLandlinePhone($OTV->getLandlinePhone());
-        $OtvRequest->setComments($OTV->getComments());
-        $data = $OTV->getData();
-        $houseType = $data['otvInfo']['houseType'];
-        $OtvRequest->setHouseType($houseType);
-
-
-
-
+        $OtvMapper->mapToOtvRequest($OTV, $OtvRequest);
 
         $form = $this->createForm(OtvType::class, $OtvRequest);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $OtvRequest = $form->getData();
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $OtvRequest = $form->getData();
 
-            $OTV->getResidents()->setLastname(($OtvRequest->getLastname()));
+                $OtvMapper->mapToOtv($OTV, $OtvRequest);
 
+                $entityManager->flush();
 
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_otv_index', [], Response::HTTP_SEE_OTHER);
+                $this->addFlash(
+                'success',
+                'Vos modifications ont été enregistrées avec succès !'
+                );
+                return $this->redirectToRoute('app_otv_index', [], Response::HTTP_SEE_OTHER);
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Error while editing OTV: ' . $e->getMessage());
+            $this->addFlash(
+            'error',
+            'Une erreur est survenue lors de la modification de l\'OTV'
+            );
         }
 
         return $this->render('otv/edit.html.twig', [

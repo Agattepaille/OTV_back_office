@@ -29,7 +29,6 @@ services:
     App\EventListener\OTVListener:
         tags:
             - { name: 'doctrine.event_listener', event: 'prePersist' }
-            - { name: 'doctrine.event_listener', event: 'preUpdate' }
 
 
     # add more service definitions when explicit configuration is needed

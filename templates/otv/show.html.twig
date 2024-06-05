@@ -11,17 +11,11 @@
 	<div class="showWrapper background">
 		<div class="otvCard">
 			<h2 class="otvTitle">Détail de l'OTV #{{ otv.id }}</h2>
-			<input type="hidden" id="otvId" value="{{ otv.id }}">
-			{# section vacances #}
+
+			{# section date création #}
 			<div class="lign">
-				<p class="label">Date de début :</p>
-				{# <p>{{ otv.startDate|date('d-m-Y') }}</p> #}
-				<input type="text" id="startDate" class="editable" value="{{ otv.startDate|date('d-m-Y')}}">
-			</div>
-			<div class="lign">
-				<p class="label">Date de fin :</p>
-				{# <p>{{ otv.endDate|date('d-m-Y') }}</p> #}
-				<input type="text" id="endDate" class="editable" value="{{ otv.endDate|date('d-m-Y')}}">
+				<p class="label">OTV créée le :</p>
+				<p>{{ otv.createdAt|date('d-m-Y') }}</p>
 			</div>
 
 			{# section info résident #}
@@ -29,36 +23,40 @@
 				<h3>Demandeur</h3>
 				<div class="lign">
 					<p class="label">Nom :</p>
-					<input type="text" id="lastname" class="editable" value="{{ otv.residents.lastname }}">
+					<p>{{ otv.residents.lastname }}</p>
 				</div>
 				<div class="lign">
 					<p class="label">Prénom :</p>
-					<input type="text" id="firstname" class="editable" value="{{ otv.residents.firstname }}">
+					<p>{{ otv.residents.firstname }}</p>
 				</div>
 				<div class="lign">
 					<p class="label">Adresse :</p>
-					<input type="text" id="street" class="editable" value="{{ otv.address.street }}">
+					<p>{{ otv.address.street }}</p>
 				</div>
 				{% if otv.address.additionnalStreetNumber is not empty or otv.address.additionalAddressInfo is not empty %}
 					<div class="lign">
 						<p class="label">Informations adresse :</p>
-						<input type="text" id="additionnalStreetNumber" class="editable" value="{{ otv.address.additionnalStreetNumber }}">
-						/
-						<input type="text" id="additionalAddressInfo" class="editable" value="{{ otv.address.additionalAddressInfo }}">
+						<p>{{ otv.address.additionnalStreetNumber }}
+							/
+							{{ otv.address.additionalAddressInfo }}</p>
 					</div>
 				{% endif %}
 				<div class="lign">
 					<p class="label">Quartier :</p>
-					<input type="text" id="district" class="editable" value="{{ otv.district.name }}">
+					<p>{{ otv.district.name }}</p>
 				</div>
 				<div class="lign">
 					<p class="label">Téléphone(s) :</p>
-					<input type="text" id="mobilePhone" class="editable" value="{{ otv.mobilePhone }}">
-					<input type="text" id="landlinePhone" class="editable" value="{{ otv.landlinePhone }}">
+					<p>
+						{{ otv.mobilePhone }}
+						{% if  otv.landlinePhone %}
+							/
+							{{ otv.landlinePhone }}</p>
+					{% endif %}
 				</div>
 				<div class="lign">
 					<p class="label">Courriel :</p>
-					<input type="text" id="email" class="editable" value="{{ otv.email }}">
+					<p>{{ otv.email }}</p>
 				</div>
 			</div>
 
@@ -71,7 +69,7 @@
 							<p class="label">Personne 1 :</p>
 							{% for item in otv.data["emergencyContact1"] %}
 								{% if item %}
-									<input type="text" class="editable" value="{{ item }}">
+									<p>{{ item }}</p>
 								{% endif %}
 							{% endfor %}
 						</div>
@@ -81,7 +79,7 @@
 							<p class="label">Personne 2 :</p>
 							{% for item in otv.data["emergencyContact2"] %}
 								{% if item %}
-									<input type="text" class="editable" value="{{ item }}">
+									<p>{{ item }}</p>
 								{% endif %}
 							{% endfor %}
 						</div>
@@ -91,7 +89,7 @@
 							<p class="label">Personne 3 :</p>
 							{% for item in otv.data["emergencyContact3"] %}
 								{% if item %}
-									<input type="text" class="editable" value="{{ item }}">
+									<p>{{ item }}</p>
 								{% endif %}
 							{% endfor %}
 						</div>
@@ -102,48 +100,82 @@
 			{# Section informations #}
 			<div class="data-section">
 				<h3>Informations</h3>
+				<div class="lign">
+					<p class="label">Date de début :</p>
+					<p>{{ otv.startDate|date('d-m-Y')}}</p>
+				</div>
+				<div class="lign">
+					<p class="label">Date de fin :</p>
+					<p>{{ otv.endDate|date('d-m-Y') }}</p>
+				</div>
 				{% if otv.data["otvInfo"]["houseType"] %}
 					<div class="lign">
 						<p class="label">Type de logement :</p>
-						<input type="text" id="houseType" class="editable" value="{{ otv.data.otvInfo.houseType }}">
+						<p>{{ otv.data.otvInfo.houseType }}</p>
 					</div>
 				{% endif %}
 				{% if otv.data["authorizedPersons"] %}
 					<div class="lign">
 						<p class="label">Personnes autorisées :</p>
-						<input type="text" id="authorizedPersons" class="editable" value="{{ otv.data.authorizedPersons }}">
+						<p>{{ otv.data.authorizedPersons }}</p>
 					</div>
 				{% endif %}
 				{% if otv.data["car"] %}
 					<div class="lign">
 						<p class="label">Voiture :</p>
-						<input type="text" id="car" class="editable" value="{{ otv.data.car }}">
+						<p>{{ otv.data.car }}</p>
 					</div>
 				{% endif %}
-				{% if otv.data["otvInfo"]["hasAlarm"] == true %}
+				{% if otv.data["otvInfo"]["hasAlarm"] %}
 					<div class="lign">
 						<p class="label">Alarme :</p>
-						<input type="text" id="hasAlarm" class="editable" value="Oui">
+						{% if otv.data["otvInfo"]["hasAlarm"] == true %}
+							<p>
+								oui
+							</p>
+						{% else %}
+							<p>
+								non
+							</p>
+						{% endif %}
 					</div>
 				{% endif %}
-				{% if otv.data["otvInfo"]["hasAlarmExt"] == true %}
-					<div class="lign">
-						<p class="label">Alarme extérieure :</p>
-						<input type="text" id="hasAlarmExt" class="editable" value="Oui">
-					</div>
-				{% endif %}
-				{% if otv.data["otvInfo"]["hasAnimal"] == true %}
-					<div class="lign">
-						<p class="label">Animal :</p>
-						<input type="text" id="hasAnimal" class="editable" value="Oui">
-					</div>
-				{% endif %}
-				{% if otv.data["otvInfo"]["hasCamera"] == true %}
-					<div class="lign">
-						<p class="label">Caméra :</p>
-						<input type="text" id="hasCamera" class="editable" value="Oui">
-					</div>
-				{% endif %}
+				<div class="lign">
+					<p class="label">Alarme extérieure :</p>
+					{% if otv.data["otvInfo"]["hasAlarmExt"] == true %}
+						<p>
+							oui
+						</p>
+					{% else %}
+						<p>
+							non
+						</p>
+					{% endif %}
+				</div>
+				<div class="lign">
+					<p class="label">Animal :</p>
+					{% if otv.data["otvInfo"]["hasAnimal"] == true %}
+						<p>
+							oui
+						</p>
+					{% else %}
+						<p>
+							non
+						</p>
+					{% endif %}
+				</div>
+				<div class="lign">
+					<p class="label">Caméra :</p>
+					{% if otv.data["otvInfo"]["hasCamera"] == true %}
+						<p>
+							oui
+						</p>
+					{% else %}
+						<p>
+							non
+						</p>
+					{% endif %}
+				</div>
 				{% if otv.data["otvInfo"]["blindsSchedule"] %}
 					<div class="lign">
 						<p class="label">Horaires des volets automatiques :</p>
@@ -181,30 +213,35 @@
 			{% endif %}
 
 			{# Commentaires #}
+			{% if otv.comments %}
 				<div class="data-section">
 					<h3>Commentaires</h3>
 					<div class="lign">
-						<textarea type="text" class="editabl form-control" value="{{ otv.comments }}"></textarea>
+						<p>{{ otv.comments }}</p>
 					</div>
 				</div>
+			{% endif %}
 
 			{# Actions #}
-			<div class="lign links">
-				<p>
+			<div class="row align-items-center justify-content-around mt-5">
+				<div class="col-auto">
 					<a class="redirect" href="{{ path('app_otv_index') }}">
 						<i class="fa-solid fa-arrow-left"></i>
 						Retour aux OTV
 					</a>
-					<a class="redirect" href="{{ path('app_otv_edit', {'id': otv.id})  }}">
-						<i class="fa-solid fa-arrow-left"></i>
+				</div>
+				<div class="col-auto">
+					<a class="userBtn btn btn-outline-primary" href="{{ path('app_otv_edit', {'id': otv.id}) }}">
 						Modifier l'OTV
 					</a>
+				</div>
+				<div class="col-auto">
 					{{ include('otv/_delete_form.html.twig') }}
-				</p>
+				</div>
 			</div>
+
 		</div>
 	</div>
 
-	
 
 {% endblock %}
