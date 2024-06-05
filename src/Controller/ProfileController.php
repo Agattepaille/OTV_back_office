@@ -3,12 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\UserType;
-use App\Form\User1Type;
-use App\Form\ProfileType;
+use App\DTO\UserRequest;
+use App\Form\UserFormType;
 use App\Repository\UserRepository;
+use App\Form\ChangePasswordFormType;
 use App\Form\ChangeUserPasswordFormType;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,14 +52,57 @@ class ProfileController extends AbstractController
             $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page');
             return $this->redirectToRoute('home');
         }
-        
+
         return $this->render('profile/show.html.twig', [
             'user' => $currentUser,
         ]);
     }
 
+
+    #[Route('/{id}/edit', name: 'app_profile_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
+    {
+
+        $currentUser = $this->getUser();
+
+        // Vérifier si l'utilisateur est bien connecté
+        if (!$currentUser) {
+            $this->addFlash('error',  'Vous devez être connecté pour accéder à cette page');
+            return $this->redirectToRoute('home');
+        }
+
+        //Si l'utilisateur veut modifier un autre profil que le sien à l'aide d'un ID dans l'url, redirection vers profil.
+        if ($currentUser !== $user) {
+            return $this->redirectToRoute('app_profile_show', ['id' => $currentUser], Response::HTTP_SEE_OTHER);
+        }
+
+        $userRequest = new UserRequest();
+        $userRequest->setEmail($user->getEmail());
+        $userRequest->setLastname($user->getLastname());
+        $userRequest->setFirstname($user->getFirstname());
+
+        $form = $this->createForm(UserFormType::class, $userRequest);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $userRequest = $form->getData();
+            $user->setEmail($userRequest->getEmail());
+            $user->setLastname($userRequest->getLastname());
+            $user->setFirstname($userRequest->getFirstname());
+
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_otv_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('profile/edit.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
+    }
+
     #[Route('/{id}/editPassword', name: 'app_profile_editPassword', methods: ['GET', 'POST'])]
-    public function editPassword(User $user, Security $security, Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher): Response
+    public function editPassword(LoggerInterface $logger, User $user, Security $security, Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher): Response
     {
         $form = $this->createForm(ChangeUserPasswordFormType::class);
 
@@ -73,27 +117,33 @@ class ProfileController extends AbstractController
 
         //Si l'utilisateur veut modifier un autre profil que le sien à l'aide d'un ID dans l'url, redirection vers profil.
         if ($this->getUser() !== $user) {
-            return $this->redirectToRoute('app_profile_show');
+            return $this->redirectToRoute('app_profile_show ', ['id' => $currentUser], Response::HTTP_SEE_OTHER);
         }
+
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($hasher->isPasswordValid($user, $form->getData()['plainPassword'])) {
+            if ($hasher->isPasswordValid($user, $form->getData()['currentPassword'])) {
+                $newPassword = $form->get('newPassword')->getData();        
+
+                $logger->info('Password  ' . $newPassword);
+
                 $user->setPassword(
                     $hasher->hashPassword(
-                        $user,
-                        $form->getData()['newPassword']
+                        $user,$newPassword
                     )
-                );
-                $this->addFlash(
-                    'success','Votre mot de passe a bien été modifié.'
                 );
 
                 $manager->persist($user);
                 $manager->flush();
 
-                return $this->redirectToRoute('app_profile_show');
+                $this->addFlash(
+                    'success',
+                    'Votre mot de passe a bien été modifié'
+                );
+                return $this->redirectToRoute('app_otv_index');
             } else {
                 $this->addFlash(
-                    'warning','Votre mot de passe actuel est incorrect.'
+                    'warning',
+                    'Mot de passe incorrect'
                 );
             }
         }
@@ -103,45 +153,10 @@ class ProfileController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_profile_edit', methods: ['GET', 'POST'])]
-    // #[IsGranted('ROLE_USER')]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        // $currentUser = $this->security->getUser();
-        $currentUser = $this->getUser();
-
-        // Vérifier si l'utilisateur est bien connecté
-        if (!$currentUser) {
-            $this->addFlash('error',  'Vous devez être connecté pour accéder à cette page');
-            return $this->redirectToRoute('home');
-        }
-
-        //Si l'utilisateur veut modifier un autre profil que le sien à l'aide d'un ID dans l'url, redirection vers profil.
-        if ($currentUser !== $user) {
-            return $this->redirectToRoute('app_profile_show', ['id' => $currentUser], Response::HTTP_SEE_OTHER);
-        }
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_otv_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('profile/edit.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
-    }
-
-    
-
     #[Route('/{id}', name: 'app_profile_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($user);
             $entityManager->flush();
         }

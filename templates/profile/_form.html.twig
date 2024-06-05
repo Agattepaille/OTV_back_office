@@ -26,13 +26,14 @@
 			'placeholder': 'Courriel',
 		}})	}}
 </div>
+
 <div class="row d-flex justify-content-end align-items-center mt-4">
 	<div class="col-auto">
 		<button class="userBtn btn btn-outline-primary">{{ button_label|default('Save') }}</button>
 	</div>
 	<div class="col-auto">
 
-		<a class="button" href="{{ path('app_profile_editPassword', {'id': user.id}) }}">{{ 'password'|trans({}, 'profil') }}</a>
+		<a class="userBtn btn btn-outline-primary" href="{{ path('app_profile_editPassword', {'id': user.id}) }}">Changer de mot de passe</a>
 	</div>
 	{% if user.roles[0] != 'ROLE_ADMIN' and is_granted('ROLE_USER') %}
 		<div class="col-auto">

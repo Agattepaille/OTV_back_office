@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\DTO\UserRequest;
+use App\Form\UserFormType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,11 +28,15 @@ class UserController extends AbstractController
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
     {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $userRequest = new UserRequest();
+        $form = $this->createForm(UserFormType::class, $userRequest);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user = new User();
+            $user->setEmail($form->get('email')->getData());
+            $user->setLastname($form->get('lastname')->getData());
+            $user->setFirstname($form->get('firstname')->getData());
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -45,7 +51,6 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/new.html.twig', [
-            'user' => $user,
             'form' => $form,
         ]);
     }
@@ -61,16 +66,40 @@ class UserController extends AbstractController
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
     {
-        $form = $this->createForm(UserType::class, $user);
+
+        $currentUser = $this->getUser();
+
+        // Vérifier si l'utilisateur est bien connecté
+        if (!$currentUser->getRoles() === ['ROLE_ADMIN']) {
+            $this->addFlash('error',  'Vous devez être admin pour accéder à cette page');
+            return $this->redirectToRoute('app_home');
+        }
+
+        $userRequest = new UserRequest();
+        $userRequest->setEmail($user->getEmail());
+        $userRequest->setLastname($user->getLastname());
+        $userRequest->setFirstname($user->getFirstname());
+
+        $form = $this->createForm(UserFormType::class, $userRequest);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $form->get('password')->getData()
-                )
-            );
+            $userRequest = $form->getData();
+
+            $user->setEmail($userRequest->getEmail());
+            $user->setLastname($userRequest->getLastname());
+            $user->setFirstname($userRequest->getFirstname());
+            if (!empty($userRequest->getNewPassword())) {
+                $user->setPassword(
+                    $userPasswordHasher->hashPassword(
+                        $user,
+                        $userRequest->getNewPassword()
+                    )
+                );
+            } else {
+                $user->setPassword($userRequest->getOldPassword());
+            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
@@ -85,7 +114,7 @@ class UserController extends AbstractController
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($user);
             $entityManager->flush();
         }
