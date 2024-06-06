@@ -20,8 +20,52 @@
 			<div class="card-body">
 
 				<h1>Ajouter un utilisateur</h1>
+				{{ form_start(form) }}
+				<div class="lign">
+					<p class="label">Nom</p>
+					{{ form_row(form.lastname, {
+		'label': false,
+		'attr': {
+			'id': 'lastname',
+			'placeholder': 'Nom',
+		}}) }}
+				</div>
+				<div class="lign">
+					<p class="label">Prénom</p>
+					{{ form_row(form.firstname, {
+		'label': false,
+		'attr': {
+			'id': 'firstname',
+			'placeholder': 'Prénom',
+		}})	}}
+				</div>
+				<div class="lign">
+					<p class="label">Courriel</p>
+					{{ form_row(form.email, {
+		'label': false,
+		'attr': {
+			'id': 'email',
+			'placeholder': 'Courriel',
+		}})	}}
+				</div>
+				<div class="lign">
+					<p class="label">Mot de passe</p>
+					{{ form_row(form.password, {
+		'label': false,
+		'attr': {
+			'id': 'password',
+			'placeholder': 'Mot de passe',
+		}})	}}
+				</div>
 
-				{{ include('user/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+				<div class="row d-flex justify-content-end align-items-center mt-4">
+					<div class="col-auto">
+						<button class="userBtn btn btn-outline-primary">{{ button_label|default('Sauvegarder') }}</button>
+					</div>
+
+				</div>
+				{{ form_end(form) }}
+
 				<a href="{{ path('app_user_index') }}">
 					<i class="fa-solid fa-arrow-left mr-2"></i>Retour à la liste des utilisateurs</a>
 			</div>
