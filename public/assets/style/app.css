@@ -44,7 +44,7 @@ h1 {
   top: 0;
   bottom: 0;
   left: 0;
-  width: 250px;
+  width: 220px;
   background-color: #374f6b;
   padding-top: 100px;
   overflow-y: auto;
@@ -64,12 +64,14 @@ h1 {
   overflow-x: auto;
   max-width: 100%;
   margin-top: 20px;
+  min-width: 600px;
 }
 
 #otvTable {
   width: 100%;
   font-size: 0.8rem;
 }
+
 
 .card {
   margin-top: 20px;
@@ -103,6 +105,12 @@ a .fa-eye {
 
 a .fa-eye:hover {
   color: #5479a2;
+}
+
+
+
+i .fa-file-export:hover {
+  color: #374f6b;
 }
 
 /* map */
@@ -151,5 +159,24 @@ a .fa-eye:hover {
 @media (min-width: 1200px) {
   #map {
     height: 800px;
+  }
+}
+
+/* Additional media queries for table responsiveness */
+@media (max-width: 768px) {
+  #otvTable {
+    font-size: 0.7rem;
+  }
+  .table-container {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  #otvTable {
+    font-size: 0.6rem;
+  }
+  .table-container {
+    padding: 0 5px;
   }
 }

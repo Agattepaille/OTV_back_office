@@ -126,7 +126,6 @@
 						<p>{{ otv.data.car }}</p>
 					</div>
 				{% endif %}
-				{% if otv.data["otvInfo"]["hasAlarm"] %}
 					<div class="lign">
 						<p class="label">Alarme :</p>
 						{% if otv.data["otvInfo"]["hasAlarm"] == true %}
@@ -139,7 +138,6 @@
 							</p>
 						{% endif %}
 					</div>
-				{% endif %}
 				<div class="lign">
 					<p class="label">Alarme extérieure :</p>
 					{% if otv.data["otvInfo"]["hasAlarmExt"] == true %}

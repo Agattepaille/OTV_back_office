@@ -21,10 +21,11 @@
 				<h1>Mon compte</h1>
 				{{ include('profile/_form.html.twig', {'button_label': 'Enregistrer'}) }}
 				<div class="mt-3">
-					<a href="{{ path('app_otv_index') }}"><i class="fa-solid fa-arrow-left mr-2"></i>Retours à la liste des OTV</a>
-				{# {{ include('user/_delete_form.html.twig') }} #}
+					<a href="{{ path('app_otv_index') }}">
+						<i class="fa-solid fa-arrow-left mr-2"></i>Retours à la liste des OTV</a>
 				</div>
-				</div>
+			</div>
 		</div>
 	</div>
+ 
 {% endblock %}

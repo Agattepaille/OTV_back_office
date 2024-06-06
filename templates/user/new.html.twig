@@ -3,22 +3,72 @@
 	<link rel="stylesheet" href="{{ asset('assets/style/users.css') }}">
 {% endblock %}
 
-{% block title %}New User
+{% block title %}Nouvel utilisateur
 {% endblock %}
 
 {% block body %}
+	<!-- Sidebar -->
+	{{ include('_partials/_sidebar.html.twig') }}
+	<!-- Navbar -->
+	{{ include('_partials/_navbar.html.twig') }}
+
+	<!-- Main content -->
 	<div
-		class="pageWrapper">
-		<!-- Sidebar -->
-		{{ include('_partials/_sidebar.html.twig') }}
-		<div class="mainContent">
+		class="content">
+		<!-- Card container -->
+		<div class="card card-container small-card">
+			<div class="card-body">
 
-			<h1>Create new User</h1>
-            <div class=" cardContainer shadowBox card">
+				<h1>Ajouter un utilisateur</h1>
+				{{ form_start(form) }}
+				<div class="lign">
+					<p class="label">Nom</p>
+					{{ form_row(form.lastname, {
+		'label': false,
+		'attr': {
+			'id': 'lastname',
+			'placeholder': 'Nom',
+		}}) }}
+				</div>
+				<div class="lign">
+					<p class="label">Prénom</p>
+					{{ form_row(form.firstname, {
+		'label': false,
+		'attr': {
+			'id': 'firstname',
+			'placeholder': 'Prénom',
+		}})	}}
+				</div>
+				<div class="lign">
+					<p class="label">Courriel</p>
+					{{ form_row(form.email, {
+		'label': false,
+		'attr': {
+			'id': 'email',
+			'placeholder': 'Courriel',
+		}})	}}
+				</div>
+				<div class="lign">
+					<p class="label">Mot de passe</p>
+					{{ form_row(form.password, {
+		'label': false,
+		'attr': {
+			'id': 'password',
+			'placeholder': 'Mot de passe',
+		}})	}}
+				</div>
 
-                {{ include('user/_form.html.twig', {'button_label': 'Enregistrer'}) }}
-                <a href="{{ path('app_user_index') }}">Retour à la liste utilisateurs</a>
-            </div>
+				<div class="row d-flex justify-content-end align-items-center mt-4">
+					<div class="col-auto">
+						<button class="userBtn btn btn-outline-primary">{{ button_label|default('Sauvegarder') }}</button>
+					</div>
+
+				</div>
+				{{ form_end(form) }}
+
+				<a href="{{ path('app_user_index') }}">
+					<i class="fa-solid fa-arrow-left mr-2"></i>Retour à la liste des utilisateurs</a>
+			</div>
 		</div>
 	</div>
 {% endblock %}

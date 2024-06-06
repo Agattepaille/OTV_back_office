@@ -7,6 +7,18 @@ $(document).ready(function () {
         },
         fixedHeader: true,
         responsive: true,
+        dom: '<"d-flex justify-content-between"lfB>rt<"bottom"ip><"clear">', 
+
+        buttons: [
+            {
+                extend: 'print',
+                text: 'Imprimer',
+                title: 'Liste des OTV actives',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 10, 11]
+                }
+            },
+        ]
     });
 
     // Convertir la date du format dd-mm-yyyy au format yyyy-mm-dd
